@@ -1,0 +1,54 @@
+# Notional Federal Information System — MERIDIAN
+# Used for demo purposes only. All data is fictional.
+
+organization: "Defense Geospatial-Intelligence Agency (DGIA)"
+higher_level_organization: "Department of Defense (DoD)"
+system_name: "MERIDIAN Geospatial Analysis Platform"
+system_acronym: "MERIDIAN"
+system_version: "2.1"
+emass_number: "DOD-MERIDIAN-2025-0042"
+
+confidentiality: "Moderate"
+integrity: "Moderate"
+availability: "Low"
+
+mission: >-
+  MERIDIAN provides geospatial intelligence analysts with AI-assisted
+  imagery analysis, pattern-of-life detection, and automated report
+  generation capabilities for operational planning and decision support.
+
+authorization_boundary: >-
+  Air-gapped enclave within the DGIA Secure Computing Facility (SCF).
+  All components operate on the SIPRNet enclave with no external
+  internet connectivity. Physical boundary includes Server Room B,
+  Racks 14-18, and associated network switches.
+
+distribution_entities: "authorized DGIA personnel with a valid need-to-know and appropriate clearance"
+distribution_office: "the DGIA Information System Security Manager (ISSM)"
+
+authorizing_official:
+  name: "COL James R. Morrison, USA"
+  title: "Authorizing Official"
+  organization: "DGIA Cyber Security Division"
+
+issm:
+  name: "Ms. Sarah K. Chen"
+  title: "Information System Security Manager"
+  organization: "DGIA Cyber Security Division"
+
+components:
+  - name: "MERIDIAN Application Server"
+    description: "Primary web application serving analyst workstations"
+    type: "Application Server"
+  - name: "MERIDIAN PostgreSQL Cluster"
+    description: "Relational database storing geospatial metadata and user data"
+    type: "Database"
+  - name: "AI Inference Engine (vLLM)"
+    description: "On-premise LLM inference for automated report generation"
+    type: "AI Inference Engine"
+  - name: "GeoStore Document Repository"
+    description: "Classified document and imagery storage system"
+    type: "Document Store"
+  - name: "Analyst Workstations"
+    description: "Thin-client terminals in the SCIF analysis bay"
+    type: "End User Device"
