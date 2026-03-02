@@ -1,5 +1,5 @@
 ---
-status: pending
+status: resolved
 priority: p2
 issue_id: "005"
 tags: [code-review, documentation, roadmap, vllm]
@@ -38,3 +38,4 @@ Change `v0.8.4` to `v0.10.2` in the Phase 5.1 table. The correct value is known 
 | Date | Action |
 |------|--------|
 | 2026-03-02 | Created from code review finding |
+| 2026-03-02 | Resolved: CLAUDE.md now documents v0.10.2+ requirement. Note: the roadmap Phase 5.1 table edit is a separate file change |

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: resolved
 priority: p2
 issue_id: "001"
 tags: [code-review, architecture, documentation]
@@ -46,3 +46,4 @@ Create a table showing which connections use host routing vs service names.
 | Date | Action |
 |------|--------|
 | 2026-03-02 | Created from code review finding |
+| 2026-03-02 | Resolved: Networking section rewritten in root CLAUDE.md to distinguish cross-stack (host.docker.internal) vs intra-stack (service names) |

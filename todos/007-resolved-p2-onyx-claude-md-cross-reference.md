@@ -1,5 +1,5 @@
 ---
-status: pending
+status: resolved
 priority: p2
 issue_id: "007"
 tags: [code-review, documentation]
@@ -35,3 +35,4 @@ Add near the top of onyx/CLAUDE.md: "This file covers Onyx-specific guidance. Fo
 | Date | Action |
 |------|--------|
 | 2026-03-02 | Created from code review finding |
+| 2026-03-02 | Resolved: onyx/CLAUDE.md replaced with deploy-only stub that points to root CLAUDE.md |

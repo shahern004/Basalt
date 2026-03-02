@@ -1,5 +1,5 @@
 ---
-status: pending
+status: resolved
 priority: p2
 issue_id: "002"
 tags: [code-review, documentation, langfuse, gotchas]
@@ -48,3 +48,4 @@ Add a single bullet: "See `docs/solutions/` for known issues and fixes."
 | Date | Action |
 |------|--------|
 | 2026-03-02 | Created from code review finding |
+| 2026-03-02 | Resolved: Added Gotchas section in root CLAUDE.md with ClickHouse Alpine IPv6 entry and link to solution doc |

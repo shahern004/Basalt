@@ -1,5 +1,5 @@
 ---
-status: pending
+status: resolved
 priority: p3
 issue_id: "008"
 tags: [code-review, documentation]
@@ -24,3 +24,4 @@ Add parenthetical counts to the port table or a note below the diagram. E.g., "L
 | Date | Action |
 |------|--------|
 | 2026-03-02 | Created from code review finding |
+| 2026-03-02 | Resolved: Container counts now included in roadmap Running Infrastructure table |

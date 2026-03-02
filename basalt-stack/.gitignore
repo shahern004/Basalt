@@ -1,3 +1,0 @@
-.env
-inference/litellm/.env
-inference/langfuse/.env

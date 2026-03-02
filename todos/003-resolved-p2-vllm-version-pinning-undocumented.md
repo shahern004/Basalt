@@ -1,5 +1,5 @@
 ---
-status: pending
+status: resolved
 priority: p2
 issue_id: "003"
 tags: [code-review, documentation, vllm, gotchas]
@@ -45,3 +45,4 @@ More detailed section with version, GPU configs, and air-gap notes.
 | Date | Action |
 |------|--------|
 | 2026-03-02 | Created from code review finding |
+| 2026-03-02 | Resolved: vLLM v0.10.2+ requirement documented in both Startup Sequence and Gotchas section of root CLAUDE.md |

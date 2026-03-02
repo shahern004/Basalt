@@ -1,5 +1,5 @@
 ---
-status: pending
+status: resolved
 priority: p3
 issue_id: "015"
 tags: [code-review, simplification, onyx]
@@ -25,3 +25,4 @@ Remove all three sections. They don't contain project-specific information.
 | Date | Action |
 |------|--------|
 | 2026-03-02 | Created from code review finding |
+| 2026-03-02 | Resolved: onyx/CLAUDE.md replaced with deploy-only stub; all generic sections removed |

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: resolved
 priority: p2
 issue_id: "004"
 tags: [code-review, security, air-gap, langfuse]
@@ -47,3 +47,4 @@ Audit all services for phone-home behavior and document/disable each.
 | Date | Action |
 |------|--------|
 | 2026-03-02 | Created from code review finding |
+| 2026-03-02 | Resolved: Langfuse telemetry gotcha added to CLAUDE.md. Note: the actual .env fix (TELEMETRY_ENABLED=false) is a separate config change |

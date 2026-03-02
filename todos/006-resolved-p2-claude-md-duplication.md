@@ -1,5 +1,5 @@
 ---
-status: pending
+status: resolved
 priority: p2
 issue_id: "006"
 tags: [code-review, documentation, simplification]
@@ -55,3 +55,4 @@ Add "(see onyx/CLAUDE.md)" after each duplicated item.
 | Date | Action |
 |------|--------|
 | 2026-03-02 | Created from code review finding |
+| 2026-03-02 | Resolved: Root CLAUDE.md rewritten; all duplicated Onyx items removed. onyx/CLAUDE.md replaced with deploy-only stub |

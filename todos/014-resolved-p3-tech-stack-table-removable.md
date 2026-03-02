@@ -1,5 +1,5 @@
 ---
-status: pending
+status: resolved
 priority: p3
 issue_id: "014"
 tags: [code-review, simplification]
@@ -24,3 +24,4 @@ Remove the table. The Overview section already names key technologies per subpro
 | Date | Action |
 |------|--------|
 | 2026-03-02 | Created from code review finding |
+| 2026-03-02 | Resolved: Technology Stack table removed from root CLAUDE.md |
