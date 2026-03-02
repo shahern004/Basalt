@@ -1,0 +1,45 @@
+services:
+  vllm:
+    image: ${VLLM_IMAGE:-vllm/vllm-openai}:${VLLM_TAG:-v0.10.2}
+    restart: unless-stopped
+    ipc: host
+    ports:
+      - "${VLLM_PORT:-8001}:8000"
+    volumes:
+      - ${MODEL_PATH:-./models}:/models
+      - vllm-hf-cache:/root/.cache/huggingface
+    environment:
+      - VLLM_NO_USAGE_STATS=1
+      - NVIDIA_VISIBLE_DEVICES=all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: >
+      --model openai/gpt-oss-20b
+      --served-model-name gpt-oss-20b
+      --host 0.0.0.0
+      --port 8000
+      --gpu-memory-utilization 0.85
+      --max-model-len 4096
+      --max-num-seqs 64
+      --tensor-parallel-size 1
+      --async-scheduling
+      --disable-log-requests
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 600s
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "6"
+
+volumes:
+  vllm-hf-cache:

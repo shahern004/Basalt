@@ -26,5 +26,9 @@ Thumbs.db
 **/data/
 **/pgdata/
 
+# Large binaries
+*.bin
+
 # Claude Code local overrides
 .claude.local.md
+.claude/

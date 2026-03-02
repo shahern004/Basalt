@@ -1,0 +1,7 @@
+# Basalt Stack
+
+## Getting Started
+
+``` bash
+sudo docker network create proxy inference
+```

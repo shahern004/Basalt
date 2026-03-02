@@ -1,0 +1,63 @@
+services:
+  litellm:
+    image: ${LITELLM_IMAGE:?error}:${LITELLM_TAG:?error}
+    restart: always
+    ports:
+      - ${LITELLM_PORT:-8000}:8000
+    volumes:
+      - ./litellm-config.yaml:/app/config.yaml
+    command: --port 8000 --config config.yaml
+    depends_on:
+      postgres:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      COHERE_API_KEY: ${COHERE_API_KEY:-}
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?error}
+      DATABASE_URL: ${DATABASE_URL:-}
+      LANGFUSE_HOST: ${LANGFUSE_HOST:-}
+      LANGFUSE_AUTH: ${LANGFUSE_AUTH:-}
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_AUTH:-}
+      OTEL_EXPORTER: 'otlp_http'
+      OTEL_ENDPOINT: ${LANGFUSE_HOST}/api/public/otel/v1/traces
+      OTEL_HEADERS: "Authorization=Basic ${LANGFUSE_AUTH}"
+
+  redis:
+    image: ${REDIS_IMAGE}:${REDIS_TAG}
+    restart: always
+    volumes:
+      - redis_data:/data
+    command: >
+      --requirepass ${REDIS_AUTH:?error}
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+
+  postgres:
+    image: ${POSTGRES_IMAGE}:${POSTGRES_TAG}
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:?error}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?error}
+      - POSTGRES_DB=${POSTGRES_DB:?error}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local

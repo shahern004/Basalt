@@ -1,0 +1,47 @@
+---
+include:
+  - ./db/include.yaml
+
+services:
+  server:
+    image: ${DOCKER_IMAGE_REPO}${AUTHENTIK_IMAGE:-goauthentik/server:2023.10.6}
+    restart: unless-stopped
+    command: server
+    environment: &authentik-env
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgres
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:-authentik}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?error}
+    ports:
+      - "${COMPOSE_PORT_HTTP:-9080}:9000"
+      - "${COMPOSE_PORT_HTTPS:-9443}:9443"
+    volumes: &authentik-vols
+      - media:/media
+    depends_on: &authentik-depends-on
+      - postgres
+      - redis
+    networks:
+      - proxy
+      - default
+  worker:
+    image: ${DOCKER_IMAGE_REPO}${AUTHENTIK_IMAGE:-goauthentik/server:2023.10.6}
+    restart: unless-stopped
+    command: worker
+    user: root
+    environment:
+      <<: *authentik-env
+    volumes: *authentik-vols
+    depends_on: *authentik-depends-on
+    networks:
+      - default
+
+volumes:
+  database:
+  redis:
+  media:
+
+networks:
+  proxy:
+    external: true

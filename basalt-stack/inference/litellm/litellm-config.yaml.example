@@ -1,0 +1,17 @@
+#TODO make this match to the gpt-oss-20b configuration
+model_list:
+  # the `openai/` prefix tells litellm it's openai compatible
+  - model_name: mistralai/Pixtral-12B-2409
+    litellm_params:
+      model: openai/mistralai/Pixtral-12B-2409
+      api_base: "http://vllm:8000/v1"
+
+litellm_settings:
+  drop_params: True
+  success_callback: ["langfuse"]
+  failure_callback: ["langfuse"]
+  callbacks: ["otel"]
+
+general_settings:
+  background_health_checks: True
+  health_check_interval: 300

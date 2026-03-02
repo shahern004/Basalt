@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  open-webui:
+    build:
+      context: .
+      args:
+        OLLAMA_BASE_URL: '/ollama'
+      dockerfile: Dockerfile
+    image: ghcr.io/open-webui/open-webui:v0.1.113.6
+    volumes:
+      - ./backend/:/app/backend/
+      - ./build:/app/build/
+      - /mnt/massStorage.d/open-webui/data:/app/backend/data
+      - /mnt/hf_hub:/root/.cache/huggingface/hub
+      - ./backend/data/config.json:/app/backend/data/config.json
+      - /app/backend/data/cache
+    ports:
+      - ${OPEN_WEBUI_PORT-3000}:8080
+    env_file:
+      - .env
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    restart: unless-stopped
+    command: ["bash", "start-dev.sh"]
+
+  caddy:
+    image: caddy:2.7.6
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 14856:8888
+      - 8888:8888
+    env_file:
+      - .env
+    volumes:
+      - ./Caddyfile.docker:/etc/caddy/Caddyfile
+    depends_on:
+      - open-webui
+    extra_hosts:
+      - host.docker.internal:host-gateway

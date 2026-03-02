@@ -1,0 +1,60 @@
+---
+#NOTE: REPLACE 120B CONFIGS WITH 20B CONFIGS! WE WILL USE GPT-OSS-20B!
+services:
+  vllm:
+    image: {insert public image here}
+    restart: unless-stopped
+    environment:
+      HF_HUB_OFFLINE: "True"
+      HF_HUB_DOWNLOAD_TIMEOUT: 1
+      HF_HUB_ETAG_TIMEOUT: 1
+      COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
+      CUDA_VISIBLE_DEVICES: all
+      VLLM_ATTENTION_BACKEND: {}
+      TIKTOKEN_ENCODINGS_BASE: /root/.cache/huggingface/tiktoken_cache
+      VLLM_ENGINE_ITERATION_TIMEOUT_S: 1200 # 20 mins
+      VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS: 1200 # 20 mins
+      VLLM_RPC_TIMEOUT: 1200000 # (ms) 20 mins
+    shm_size: 10gb
+    ipc: host
+    volumes:
+      - /mnt/hf:/root/.cache/huggingface
+      - ../../../configs/vllm:/vllm-workspace/vllm-config
+    entrypoint: ["python3", "/vllm-workspace/vllm-config/entrypoint.py"]
+    command: >
+      --host 0.0.0.0
+      --gpu-memory-utilization 0.9
+      --tensor-parallel-size 4
+      --max-model-len 64000
+      --model openai/gpt-oss-20b
+    env_file:
+      - ../../.env
+    logging:
+      driver: json-file
+      options:
+        max-file: "3"
+        max-size: '10m'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8000/health/"]
+      interval: 30s
+      timeout: 3s
+      start_period: 45s
+      start_interval: 5s
+    deploy:
+      replicas: 1
+      restart_policy:
+        max_attempts: 5
+        condition: on-failure
+        delay: 10s
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 4
+              capabilities: [gpu]
+    networks:
+      - inference-endpoint
+
+networks:
+  inference-endpoint:
+    external: true
