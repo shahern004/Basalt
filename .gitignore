@@ -1,0 +1,30 @@
+# Environment files with secrets
+**/.env
+!**/.env.example
+!**/.env.template
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# Node
+node_modules/
+.next/
+dist/
+
+# IDE
+.vscode/.env
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes (runtime)
+**/data/
+**/pgdata/
+
+# Claude Code local overrides
+.claude.local.md
