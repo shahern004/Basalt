@@ -1,5 +1,5 @@
 ---
-status: pending
+status: resolved
 priority: p3
 issue_id: "009"
 tags: [code-review, documentation, onyx]
@@ -24,3 +24,4 @@ Add "(when `AUTH_TYPE=basic` is enabled)" after the test login note, or move it 
 | Date | Action |
 |------|--------|
 | 2026-03-02 | Created from code review finding |
+| 2026-03-04 | Resolved: content already removed in A1 cleanup (fca8c94) |

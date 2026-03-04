@@ -1,5 +1,5 @@
 ---
-status: pending
+status: resolved
 priority: p3
 issue_id: "010"
 tags: [code-review, documentation, onyx]
@@ -24,3 +24,4 @@ Update the path to include the `tests/` subdirectory.
 | Date | Action |
 |------|--------|
 | 2026-03-02 | Created from code review finding |
+| 2026-03-04 | Resolved: content already removed in A1 cleanup (fca8c94) |

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: resolved
 priority: p3
 issue_id: "012"
 tags: [code-review, documentation]
@@ -24,3 +24,4 @@ Add "(created at runtime)" to the log path notes in both files.
 | Date | Action |
 |------|--------|
 | 2026-03-02 | Created from code review finding |
+| 2026-03-04 | Resolved: added "(created at runtime)" to onyx/CLAUDE.md log path; root CLAUDE.md reference already removed in A1 |

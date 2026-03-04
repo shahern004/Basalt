@@ -1,5 +1,5 @@
 ---
-status: pending
+status: resolved
 priority: p3
 issue_id: "011"
 tags: [code-review, documentation, onyx, celery]
@@ -24,3 +24,4 @@ Update line 30 to reference `apps/primary.py`.
 | Date | Action |
 |------|--------|
 | 2026-03-02 | Created from code review finding |
+| 2026-03-04 | Resolved: content already removed in A1 cleanup (fca8c94) |
