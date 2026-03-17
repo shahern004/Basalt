@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Basalt Portal</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0f0f13;--card:#1a1a23;--card-hover:#22222e;
+    --border:#2a2a3a;--text:#c8c8d8;--text-dim:#7a7a8e;
+    --accent:#6366f1;--accent-dim:#4f46e5;
+    --up:#22c55e;--down:#ef4444;--checking:#f59e0b;
+  }
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--bg);color:var(--text);
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;
+    padding:2rem 1rem;
+  }
+
+  /* ── Header ── */
+  .header{text-align:center;margin-bottom:2.5rem}
+  .header h1{font-size:2rem;font-weight:700;letter-spacing:.02em}
+  .header h1 span{color:var(--accent)}
+  .header p{color:var(--text-dim);margin-top:.4rem;font-size:.9rem}
+
+  /* ── Grid ── */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:1.25rem;width:100%;max-width:1000px;
+  }
+
+  /* ── Card ── */
+  .card{
+    background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:1.5rem;display:flex;flex-direction:column;gap:.75rem;
+    transition:background .15s,border-color .15s;
+    text-decoration:none;color:inherit;cursor:pointer;
+  }
+  .card:hover{background:var(--card-hover);border-color:var(--accent-dim)}
+  .card-top{display:flex;align-items:center;gap:.75rem}
+  .card-icon{
+    width:40px;height:40px;border-radius:8px;
+    background:var(--accent);display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .card-icon svg{width:22px;height:22px;fill:#fff}
+  .card-title{font-size:1.1rem;font-weight:600}
+  .card-desc{color:var(--text-dim);font-size:.85rem;line-height:1.4}
+  .card-footer{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-top:auto;padding-top:.5rem;
+  }
+  .port-badge{
+    font-size:.75rem;font-family:monospace;
+    background:#2a2a3a;color:var(--text-dim);
+    padding:.2rem .5rem;border-radius:4px;
+  }
+
+  /* ── Status dot ── */
+  .status{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--text-dim)}
+  .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .dot.checking{background:var(--checking);animation:pulse 1.2s infinite}
+  .dot.up{background:var(--up);animation:pulse 2s infinite}
+  .dot.down{background:var(--down)}
+
+  @keyframes pulse{
+    0%,100%{opacity:1}50%{opacity:.4}
+  }
+
+  /* ── Footer ── */
+  .footer{
+    margin-top:3rem;color:var(--text-dim);font-size:.75rem;text-align:center;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>Basalt</span> Portal</h1>
+  <p>Self-Hosted AI Infrastructure</p>
+</div>
+
+<div class="grid" id="services"></div>
+
+<div class="footer">Basalt Stack &middot; Air-Gapped Deployment</div>
+
+<script>
+const SERVICES = [
+  {
+    id: "onyx",
+    name: "Onyx",
+    desc: "RAG AI Platform",
+    port: 3000,
+    url: "http://localhost:3000",
+    healthPath: "/health/onyx",
+    icon: '<svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>'
+  },
+  {
+    id: "open-webui",
+    name: "Open-WebUI",
+    desc: "Chat Interface",
+    port: 3002,
+    url: "http://localhost:3002",
+    healthPath: "/health/open-webui",
+    icon: '<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>'
+  },
+  {
+    id: "litellm",
+    name: "LiteLLM",
+    desc: "LLM Gateway",
+    port: 8000,
+    url: "http://localhost:8000",
+    healthPath: "/health/litellm",
+    icon: '<svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>'
+  },
+  {
+    id: "langfuse",
+    name: "Langfuse",
+    desc: "Observability",
+    port: 3001,
+    url: "http://localhost:3001",
+    healthPath: "/health/langfuse",
+    icon: '<svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>'
+  },
+  {
+    id: "vllm",
+    name: "vLLM",
+    desc: "Inference Engine",
+    port: 8001,
+    url: "http://localhost:8001",
+    healthPath: "/health/vllm",
+    icon: '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 6v4l3 3"/></svg>'
+  }
+];
+
+const grid = document.getElementById("services");
+
+// Render cards
+SERVICES.forEach(svc => {
+  const card = document.createElement("a");
+  card.href = svc.url;
+  card.target = "_blank";
+  card.rel = "noopener";
+  card.className = "card";
+  card.innerHTML = `
+    <div class="card-top">
+      <div class="card-icon">${svc.icon}</div>
+      <div class="card-title">${svc.name}</div>
+    </div>
+    <div class="card-desc">${svc.desc}</div>
+    <div class="card-footer">
+      <span class="port-badge">:${svc.port}</span>
+      <div class="status">
+        <span class="dot checking" id="dot-${svc.id}"></span>
+        <span id="label-${svc.id}">Checking</span>
+      </div>
+    </div>`;
+  grid.appendChild(card);
+});
+
+// Health polling
+async function checkHealth(svc) {
+  const dot   = document.getElementById(`dot-${svc.id}`);
+  const label = document.getElementById(`label-${svc.id}`);
+  try {
+    const res = await fetch(svc.healthPath, { signal: AbortSignal.timeout(4000) });
+    // 401 means service is running but requires auth
+    if (res.ok || res.status === 401) {
+      dot.className = "dot up";
+      label.textContent = "Online";
+    } else {
+      dot.className = "dot down";
+      label.textContent = "Down";
+    }
+  } catch {
+    dot.className = "dot down";
+    label.textContent = "Down";
+  }
+}
+
+function pollAll() {
+  SERVICES.forEach(checkHealth);
+}
+
+pollAll();
+setInterval(pollAll, 15000);
+</script>
+</body>
+</html>

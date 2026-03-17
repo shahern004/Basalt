@@ -53,6 +53,7 @@ This stack runs on isolated networks with **no internet access at any point**:
 | Langfuse | 3001 | `basalt-stack/inference/langfuse/` |
 | Onyx | 3000 | `onyx/deployment/docker_compose/` |
 | Open-WebUI | 3002 | `basalt-stack/web/open-webui/` |
+| Portal | 443 | `basalt-stack/web/portal/` |
 
 ## Networking
 
@@ -80,6 +81,10 @@ cd onyx/deployment/docker_compose && docker compose up -d
 
 # 5. (Optional) Start Open-WebUI
 cd basalt-stack/web/open-webui && docker compose up -d
+
+# 6. Start Portal (landing page with health dashboard)
+cd basalt-stack/web/portal && docker compose up -d
+# Browse: https://localhost
 ```
 
 ## Commands Quick Reference
@@ -119,5 +124,6 @@ Key environment files:
 - `basalt-stack/inference/langfuse/.env` — Langfuse secrets
 - `onyx/deployment/docker_compose/.env` — Onyx configuration
 - `basalt-stack/web/open-webui/.env` — Open-WebUI settings
+- `basalt-stack/web/portal/.env` — Portal image and port settings
 
 See `docs/plans/basalt-development-roadmap.md` for phased deployment plan.
