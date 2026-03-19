@@ -29,6 +29,8 @@ class ERROR_MESSAGES(str, Enum):
     INVALID_PASSWORD = (
         "The password provided is incorrect. Please check for typos and try again."
     )
+    INVALID_AUTH_SOURCE = "Invalid authentication source."
+    MISSING_IDENTITY_HEADER = "Missing identity header."
     UNAUTHORIZED = "401 Unauthorized"
     ACCESS_PROHIBITED = "You do not have permission to access this resource. Please contact your administrator for assistance."
     ACTION_PROHIBITED = (

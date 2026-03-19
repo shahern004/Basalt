@@ -16,7 +16,9 @@ x-authentik-env: &authentik-env
   AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
   AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:?error}
   AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?error}
-  # Air-gap: disable all outbound telemetry and update checks
+  AUTHENTIK_BOOTSTRAP_PASSWORD: ${AUTHENTIK_BOOTSTRAP_PASSWORD:-}
+  AUTHENTIK_BOOTSTRAP_EMAIL: ${AUTHENTIK_BOOTSTRAP_EMAIL:-admin@basalt.local}
+  # Air-gap: hardcoded here as defense-in-depth (not read from .env)
   AUTHENTIK_DISABLE_UPDATE_CHECK: "true"
   AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
   AUTHENTIK_DISABLE_STARTUP_ANALYTICS: "true"
@@ -48,6 +50,7 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
+      # python3 is available in the Authentik image; curl/wget are not
       test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:9000/-/health/live/')"]
       interval: 30s
       timeout: 10s

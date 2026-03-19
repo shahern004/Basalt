@@ -17,6 +17,8 @@ openssl req -x509 -nodes \
   -subj   "/CN=basalt.local" \
   -addext "subjectAltName=DNS:*.basalt.local,DNS:basalt.local,DNS:host.docker.internal,DNS:localhost,IP:127.0.0.1"
 
+chmod 600 "$CERT_DIR/basalt.local-key.pem"
+
 echo "Certificate written to:"
 echo "  $CERT_DIR/basalt.local.pem      (fullchain)"
 echo "  $CERT_DIR/basalt.local-key.pem  (private key)"

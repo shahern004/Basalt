@@ -6,7 +6,6 @@ from typing import List, Union
 from fastapi import APIRouter, status
 from pydantic import BaseModel
 import hmac
-import os
 import re
 import secrets
 import time
@@ -30,6 +29,7 @@ from utils.utils import (
     create_token,
 )
 from utils.misc import parse_duration, validate_email_format
+from config import AUTHENTIK_SHARED_SECRET
 from constants import ERROR_MESSAGES
 
 router = APIRouter()
@@ -43,11 +43,13 @@ def _validate_authentik_secret(request: Request):
     to prevent timing attacks (S3).  If the env var is unset, validation is
     skipped — this allows direct access during admin bootstrap (Phase 2.1).
     """
-    expected = os.environ.get("AUTHENTIK_SHARED_SECRET", "")
-    if expected:
+    if AUTHENTIK_SHARED_SECRET:
         actual = request.headers.get("X-Authentik-Secret", "")
-        if not hmac.compare_digest(actual, expected):
-            raise HTTPException(403, detail="Invalid authentication source")
+        if not hmac.compare_digest(actual, AUTHENTIK_SHARED_SECRET):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=ERROR_MESSAGES.INVALID_AUTH_SOURCE,
+            )
 
 
 ############################
@@ -120,7 +122,13 @@ async def signin(request: Request, form_data: SigninForm):
 
     laci_email = request.headers.get("X-Authentik-Email")
     if not laci_email:
-        raise HTTPException(400, detail="Missing identity header")
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST, detail=ERROR_MESSAGES.MISSING_IDENTITY_HEADER
+        )
+    if not validate_email_format(laci_email):
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST, detail=ERROR_MESSAGES.INVALID_EMAIL_FORMAT
+        )
 
     user = Users.get_user_by_email(laci_email)
     if not user:
@@ -159,7 +167,9 @@ async def signup(request: Request, form_data: SignupForm):
     laci_email = request.headers.get("X-Authentik-Email")
     name = request.headers.get("X-Authentik-Name")
     if not laci_email:
-        raise HTTPException(400, detail="Missing identity header")
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST, detail=ERROR_MESSAGES.MISSING_IDENTITY_HEADER
+        )
     if not validate_email_format(laci_email):
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST, detail=ERROR_MESSAGES.INVALID_EMAIL_FORMAT
