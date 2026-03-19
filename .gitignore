@@ -35,3 +35,6 @@ basalt-stack/web/portal/certs/
 # Claude Code local overrides
 .claude.local.md
 .claude/
+
+# Compound Engineering local config (personal agent preferences)
+compound-engineering.local.md

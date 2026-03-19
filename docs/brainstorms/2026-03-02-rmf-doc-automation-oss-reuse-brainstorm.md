@@ -1,3 +1,10 @@
+---
+title: "RMF Document Automation — OSS Reuse Strategy"
+date: 2026-03-02
+status: completed
+tags: [rmf, docxtpl, vllm, oscal, document-generation, air-gap]
+---
+
 # Brainstorm: RMF Document Automation — OSS Reuse Strategy
 
 **Date**: 2026-03-02

@@ -1,7 +1,16 @@
 ---
 title: "ClickHouse Alpine Health Check Failure on Docker Desktop"
+module: langfuse
 date: 2026-02-17
-tags: [clickhouse, docker, alpine, langfuse, health-check]
+problem_type: runtime-errors
+component: clickhouse
+symptoms:
+  - ClickHouse container fails health check repeatedly
+  - Dependent services (Langfuse web/worker) cannot start
+  - Container crash-loops with "Address already in use"
+root_cause: "Alpine-based ClickHouse resolves localhost to ::1 (IPv6) but only binds on 0.0.0.0 (IPv4)"
+severity: high
+tags: [clickhouse, docker, alpine, langfuse, health-check, ipv6]
 services: [langfuse]
 ---
 

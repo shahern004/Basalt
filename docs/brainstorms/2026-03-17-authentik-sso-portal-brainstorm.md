@@ -1,3 +1,10 @@
+---
+title: "Authentik SSO Portal Integration"
+date: 2026-03-17
+status: active
+tags: [authentik, sso, oidc, portal, open-webui, onyx, security]
+---
+
 # Authentik SSO Portal Integration — Brainstorm
 
 **Date:** 2026-03-17
