@@ -5,9 +5,12 @@ from typing import List, Union
 
 from fastapi import APIRouter, status
 from pydantic import BaseModel
+import hmac
+import os
+import re
+import secrets
 import time
 import uuid
-import re
 
 from apps.web.models.auths import (
     SigninForm,
@@ -30,6 +33,22 @@ from utils.misc import parse_duration, validate_email_format
 from constants import ERROR_MESSAGES
 
 router = APIRouter()
+
+
+def _validate_authentik_secret(request: Request):
+    """Reject requests without valid shared-secret from Authentik proxy.
+
+    When AUTHENTIK_SHARED_SECRET is set, every header-auth request must include
+    a matching X-Authentik-Secret header.  Comparison uses hmac.compare_digest
+    to prevent timing attacks (S3).  If the env var is unset, validation is
+    skipped — this allows direct access during admin bootstrap (Phase 2.1).
+    """
+    expected = os.environ.get("AUTHENTIK_SHARED_SECRET", "")
+    if expected:
+        actual = request.headers.get("X-Authentik-Secret", "")
+        if not hmac.compare_digest(actual, expected):
+            raise HTTPException(403, detail="Invalid authentication source")
+
 
 ############################
 # GetSessionUser
@@ -97,25 +116,30 @@ async def update_password(
 
 @router.post("/signin", response_model=SigninResponse)
 async def signin(request: Request, form_data: SigninForm):
-    laci_email = request.headers.get("X-Authentik-Email")
-    user = Auths.authenticate_user(laci_email, laci_email)
-    if user:
-        token = create_token(
-            data={"id": user.id},
-            expires_delta=parse_duration(request.app.state.JWT_EXPIRES_IN),
-        )
+    _validate_authentik_secret(request)
 
-        return {
-            "token": token,
-            "token_type": "Bearer",
-            "id": user.id,
-            "email": user.email,
-            "name": user.name,
-            "role": user.role,
-            "profile_image_url": user.profile_image_url,
-        }
-    else:
+    laci_email = request.headers.get("X-Authentik-Email")
+    if not laci_email:
+        raise HTTPException(400, detail="Missing identity header")
+
+    user = Users.get_user_by_email(laci_email)
+    if not user:
         raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_CRED)
+
+    token = create_token(
+        data={"id": user.id},
+        expires_delta=parse_duration(request.app.state.JWT_EXPIRES_IN),
+    )
+
+    return {
+        "token": token,
+        "token_type": "Bearer",
+        "id": user.id,
+        "email": user.email,
+        "name": user.name,
+        "role": user.role,
+        "profile_image_url": user.profile_image_url,
+    }
 
 
 ############################
@@ -130,9 +154,12 @@ async def signup(request: Request, form_data: SignupForm):
             status.HTTP_403_FORBIDDEN, detail=ERROR_MESSAGES.ACCESS_PROHIBITED
         )
 
-    # Obtain email and name from the authentik headers and inject into credentials
+    _validate_authentik_secret(request)
+
     laci_email = request.headers.get("X-Authentik-Email")
     name = request.headers.get("X-Authentik-Name")
+    if not laci_email:
+        raise HTTPException(400, detail="Missing identity header")
     if not validate_email_format(laci_email):
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST, detail=ERROR_MESSAGES.INVALID_EMAIL_FORMAT
@@ -147,7 +174,7 @@ async def signup(request: Request, form_data: SignupForm):
             if Users.get_num_users() == 0
             else request.app.state.DEFAULT_USER_ROLE
         )
-        hashed = get_password_hash(laci_email)
+        hashed = get_password_hash(secrets.token_urlsafe(32))
         user = Auths.insert_new_auth(
             laci_email, hashed, name, role
         )

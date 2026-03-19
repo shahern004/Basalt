@@ -78,31 +78,49 @@ basalt-stack/web/authentik/
 
 ---
 
-## Phase 2 — Open-WebUI SSO Integration (TODO)
+## Phase 2 — Open-WebUI SSO Integration (2026-03-19)
 
-### Prerequisites
-- Phase 1 runtime steps complete (Authentik running, admin logged in)
-- Open-WebUI stack running at port 3002
+### Status: COMPLETE (code changes)
 
-### Key Tasks
-- 2.1 Bootstrap Open-WebUI admin account (manual, before enabling proxy)
-- 2.2 Create Authentik Proxy Provider for Open-WebUI (admin UI)
-- 2.3 Configure shared-secret header in Authentik group
-- 2.4 Harden Open-WebUI auth code (S1: random password, S3: hmac.compare_digest)
-- 2.4b Fix JWT secret fallback (S2: remove t0p-s3cr3t)
-- 2.5 Update Open-WebUI .env (DEFAULT_USER_ROLE, JWT_EXPIRES_IN, AUTHENTIK_SHARED_SECRET)
-- 2.6 Evaluate native WEBUI_AUTH_TRUSTED_EMAIL_HEADER before hardening fork code
-- 2.7 Rebuild and restart Open-WebUI
+### What Was Done
 
-### Open Questions for Phase 2
-- Does current Open-WebUI version support `WEBUI_AUTH_TRUSTED_EMAIL_HEADER`? If yes, may replace custom laci_ fork code entirely.
+| Task | File(s) | Notes |
+|------|---------|-------|
+| 2.0 Evaluate WEBUI_AUTH_TRUSTED_EMAIL_HEADER | (research) | NOT available in this fork. Upstream feature not backported. Proceeding with hardened laci_ fork code. |
+| 2.4 Harden auth code (S1 + S3) | `open-webui/backend/apps/web/routers/auths.py` | S1: `secrets.token_urlsafe(32)` replaces email-as-password in signup. S3: `_validate_authentik_secret()` helper with `hmac.compare_digest` on both /signin and /signup. Null-check for X-Authentik-Email header. Signin now uses `Users.get_user_by_email()` (no password check — trust comes from shared-secret gate). |
+| 2.4b Fix JWT secret (S2) | `open-webui/backend/config.py` | Removed `t0p-s3cr3t` fallback. Empty string default + `not WEBUI_SECRET_KEY` check = fail-fast at startup. |
+| 2.5 Update .env + compose | `basalt-stack/web/open-webui/.env`, `docker-compose.yaml` | Added ENABLE_SIGNUP, DEFAULT_USER_ROLE=user, JWT_EXPIRES_IN=24h, AUTHENTIK_SHARED_SECRET. Compose passes all 4 new env vars. |
+| 2.5b Fix JWT_EXPIRES_IN config | `open-webui/backend/config.py`, `apps/web/main.py` | Was hardcoded to "-1" (never). Now reads from `JWT_EXPIRES_IN` env var (default "-1" for backwards compat, overridden to "24h" in .env). |
+
+### Decisions Made
+
+1. **Native trusted headers not available:** `WEBUI_AUTH_TRUSTED_EMAIL_HEADER` doesn't exist in this fork. Hardened the existing `laci_` code instead.
+2. **Signin bypasses password check:** Once shared-secret is validated, password verification is redundant. Changed from `Auths.authenticate_user(email, email)` to `Users.get_user_by_email(email)` — cleaner and compatible with the random-password signup fix.
+3. **AUTHENTIK_SHARED_SECRET defaults to empty:** When unset, `_validate_authentik_secret()` skips validation. This allows admin bootstrap (Phase 2.1) before Authentik proxy is active.
+4. **JWT_EXPIRES_IN made configurable:** Was hardcoded in main.py. Now reads from env var via config.py, enabling the 24h expiry policy.
+
+### Deviations from Plan
+
+- Plan task 2.4 said to place shared-secret check at "TOP of both /signin and /signup". For /signup, the `ENABLE_SIGNUP` check comes first (cheaper — no env/header reads), then the shared-secret check. This is a minor ordering difference for efficiency.
+- Signin auth flow changed more significantly than planned: removed `Auths.authenticate_user()` call entirely and replaced with direct user lookup. This was necessary because the S1 fix (random password) made the old password-based auth impossible.
+
+### Not Done (runtime / manual steps for Phase 2)
+
+- [ ] 2.1 Bootstrap Open-WebUI admin account at `http://localhost:3002` before enabling Authentik proxy
+- [ ] 2.2 Create Authentik Proxy Provider (admin UI): name `openwebui-proxy`, external `https://webui.basalt.local`, internal `http://host.docker.internal:3002`, bind to embedded outpost
+- [ ] 2.3 Configure shared-secret: create `basalt-users` group with `additionalHeaders: {"X-Authentik-Secret": "c19345ef4c1dc11e574054c33d97865db668907d0a0a461b72df483ba8964a64"}`, auto-assign on enrollment approval
+- [ ] 2.6 Rebuild and restart Open-WebUI container (code changes require image rebuild)
+- [ ] 2.7 Add `webui.basalt.local` to hosts file
+- [ ] Test: browse to `https://webui.basalt.local` → Authentik login → auto-auth in Open-WebUI
+- [ ] Test: spoofed header without shared-secret → 403
+- [ ] Test: WebSocket streaming works through proxy
 
 ---
 
 ## Phase 3 — Onyx OIDC Integration (TODO)
 
 ### Prerequisites
-- Phase 1 runtime steps complete
+- Phase 1 + Phase 2 runtime steps complete
 - Onyx stack running at port 3000
 
 ### Key Tasks
@@ -121,5 +139,6 @@ basalt-stack/web/authentik/
 |--------|----------|---------|
 | AUTHENTIK_SECRET_KEY | authentik/.env | Server encryption key |
 | AUTHENTIK_BOOTSTRAP_PASSWORD | authentik/.env | Initial admin password |
-| PG_PASS | authentik/.env | PostgreSQL password |
+| PG_PASS (authentik) | authentik/.env | PostgreSQL password |
 | REDIS_PASSWORD | authentik/.env | Redis auth password |
+| AUTHENTIK_SHARED_SECRET | open-webui/.env | Header validation between Authentik proxy and Open-WebUI |

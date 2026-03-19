@@ -338,7 +338,7 @@ Portal files are preserved for this purpose (do not delete until Phase 3 complet
   - Add all users (including admin) to this group
   - Configure the enrollment flow to auto-assign this group on approval
 
-- [ ] **2.4 Modify Open-WebUI auth code** — `open-webui/backend/apps/web/routers/auths.py`
+- [x] **2.4 Modify Open-WebUI auth code** — `open-webui/backend/apps/web/routers/auths.py`
   - **SECURITY BLOCKER (S1):** Replace email-as-password with random password:
     ```python
     # In /signup handler, replace:
@@ -360,11 +360,11 @@ Portal files are preserved for this purpose (do not delete until Phase 3 complet
   - Place these checks at the TOP of both `/signin` and `/signup` endpoints
   - **Alternative (evaluate):** Upstream Open-WebUI now supports native trusted headers via `WEBUI_AUTH_TRUSTED_EMAIL_HEADER` env var. If this works with current codebase version, it may be cleaner than maintaining the custom `laci_` fork code. Test during implementation.
 
-- [ ] **2.4b Fix Open-WebUI JWT secret fallback** (SECURITY BLOCKER S2)
+- [x] **2.4b Fix Open-WebUI JWT secret fallback** (SECURITY BLOCKER S2)
   - In `open-webui/backend/config.py` (~line 304): remove `"t0p-s3cr3t"` default
   - Change to: `WEBUI_SECRET_KEY = os.environ.get("WEBUI_SECRET_KEY", os.environ.get("WEBUI_JWT_SECRET_KEY"))` — fail if not set
 
-- [ ] **2.5 Back up and update Open-WebUI environment** — `basalt-stack/web/open-webui/.env`
+- [x] **2.5 Back up and update Open-WebUI environment** — `basalt-stack/web/open-webui/.env`
   - Back up first: `cp .env .env.pre-authentik`
   - Add/update:
     ```env

@@ -273,6 +273,7 @@ DEFAULT_PROMPT_SUGGESTIONS = (
 
 
 DEFAULT_USER_ROLE = os.getenv("DEFAULT_USER_ROLE", "pending")
+JWT_EXPIRES_IN = os.getenv("JWT_EXPIRES_IN", "-1")
 USER_PERMISSIONS = {"chat": {"deletion": True}}
 TOKEN_ERROR_MARGIN = float(os.environ.get("TOKEN_ERROR_MARGIN", 0.03))
 
@@ -300,12 +301,10 @@ WEBUI_AUTH = True
 
 WEBUI_SECRET_KEY = os.environ.get(
     "WEBUI_SECRET_KEY",
-    os.environ.get(
-        "WEBUI_JWT_SECRET_KEY", "t0p-s3cr3t"
-    ),  # DEPRECATED: remove at next major version
+    os.environ.get("WEBUI_JWT_SECRET_KEY", ""),
 )
 
-if WEBUI_AUTH and WEBUI_SECRET_KEY == "":
+if WEBUI_AUTH and not WEBUI_SECRET_KEY:
     raise ValueError(ERROR_MESSAGES.ENV_VAR_NOT_FOUND)
 
 ####################################
