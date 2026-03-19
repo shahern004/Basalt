@@ -1,0 +1,14 @@
+---
+version: 1
+metadata:
+  name: Basalt Stack System Settings
+  labels:
+    blueprints.goauthentik.io/description: "Air-gap safe defaults: initials avatar, branded title"
+entries:
+  - model: authentik_brands.brand
+    identifiers:
+      domain: "."
+    state: present
+    attrs:
+      branding_title: "Basalt Stack"
+      default: true

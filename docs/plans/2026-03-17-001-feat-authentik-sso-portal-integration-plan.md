@@ -163,7 +163,7 @@ The Basalt architecture uses `host.docker.internal` for inter-stack communicatio
 
 #### Tasks
 
-- [ ] **1.1 Rewrite `basalt-stack/web/authentik/docker-compose.yaml`**
+- [x] **1.1 Rewrite `basalt-stack/web/authentik/docker-compose.yaml`**
   - Remove `proxy` external network (anti-pattern — Basalt uses host-routed networking)
   - Add `extra_hosts: ["host.docker.internal:host-gateway"]` to BOTH `server` and `worker` services
   - Update image to `ghcr.io/goauthentik/server:2026.2.1` using `${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:?error}` pattern
@@ -193,7 +193,7 @@ The Basalt architecture uses `host.docker.internal` for inter-stack communicatio
   - Add memory limits: server 1.5G, worker 1G, postgres 512M, redis 256M
   - Do NOT mount Docker socket (not needed for embedded outpost, security risk)
 
-- [ ] **1.2 Upgrade `basalt-stack/web/authentik/db/include.yaml`**
+- [x] **1.2 Upgrade `basalt-stack/web/authentik/db/include.yaml`**
   - Upgrade PostgreSQL from `12-alpine` to `16-alpine` (Authentik 2026.2 requires 14+)
   - **Pin Redis to `redis:7.4-alpine`** (not floating `redis:alpine`)
   - Keep existing health checks (they already use proper patterns)
@@ -201,7 +201,7 @@ The Basalt architecture uses `host.docker.internal` for inter-stack communicatio
   - Add `--requirepass` to Redis with `REDIS_PASSWORD` env var
   - Add log rotation to `postgres` and `redis` services
 
-- [ ] **1.3 Create `basalt-stack/web/authentik/.env.example`** (rewrite from scratch)
+- [x] **1.3 Create `basalt-stack/web/authentik/.env.example`** (rewrite from scratch)
   Use `.env.example` banner format (matching Open-WebUI/Portal convention):
   ```env
   #####################################################################
@@ -244,7 +244,7 @@ The Basalt architecture uses `host.docker.internal` for inter-stack communicatio
   AUTHENTIK_PORT_HTTP=80
   ```
 
-- [ ] **1.4 Create TLS certificate**
+- [x] **1.4 Create TLS certificate**
   - Adapt portal's `scripts/gen-cert.sh` for Authentik
   - **Use wildcard SAN**: `*.basalt.local`, `basalt.local`, `host.docker.internal`, `127.0.0.1`, `localhost`
   - Wildcard eliminates certificate regeneration when adding future subdomains
@@ -254,13 +254,13 @@ The Basalt architecture uses `host.docker.internal` for inter-stack communicatio
   - After first boot, assign cert to brand in Admin UI (System > Brands > web certificate)
   - Set `authentik_host_insecure: true` on embedded outpost config (self-signed TLS)
 
-- [ ] **1.5 Create minimal blueprint** in `basalt-stack/web/authentik/blueprints/custom/`
+- [x] **1.5 Create minimal blueprint** in `basalt-stack/web/authentik/blueprints/custom/`
   - `00-system-settings.yaml` only — set avatar to `initials`, brand title to "Basalt Stack"
   - All other configuration (providers, applications, enrollment flow) done via **admin UI** — export as blueprints later if reproducibility needed (YAGNI for sole contributor one-time setup)
   - Configure enrollment flow in admin UI: Prompt stage → UserWrite stage (`create_users_as_inactive: true`) → Deny stage ("pending approval" message)
   - **First-boot URL**: Navigate to `https://auth.basalt.local/if/flow/initial-setup/` to set up admin account
 
-- [ ] **1.6 Stage images** for air-gap transfer
+- [x] **1.6 Stage images** for air-gap transfer
   - `ghcr.io/goauthentik/server:2026.2.1` (server + worker)
   - `docker.io/library/postgres:16-alpine`
   - `docker.io/library/redis:7.4-alpine` (pinned, not floating `alpine`)
@@ -268,7 +268,7 @@ The Basalt architecture uses `host.docker.internal` for inter-stack communicatio
   - Record image digests: `docker image inspect --format '{{.Id}}'` for verification after transfer
   - Script: `docker save -o <name>.tar` → transfer → `docker load -i <name>.tar`
 
-- [ ] **1.7 Create hosts file template** for client machines
+- [x] **1.7 Create hosts file template** for client machines
   ```
   # Basalt Stack — add to C:\Windows\System32\drivers\etc\hosts
   <host-ip>  auth.basalt.local

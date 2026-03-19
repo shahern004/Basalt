@@ -1,0 +1,12 @@
+# Basalt Stack — Authentik SSO Subdomains
+# Add these entries to your hosts file:
+#   Windows: C:\Windows\System32\drivers\etc\hosts
+#   Linux:   /etc/hosts
+#
+# Replace <host-ip> with the IP address of the Basalt server.
+# If accessing from the server itself, use 127.0.0.1.
+
+<host-ip>  auth.basalt.local
+<host-ip>  webui.basalt.local
+<host-ip>  onyx.basalt.local
+<host-ip>  rmf.basalt.local

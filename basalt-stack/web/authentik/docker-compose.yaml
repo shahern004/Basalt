@@ -2,46 +2,87 @@
 include:
   - ./db/include.yaml
 
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "50m"
+    max-file: "6"
+
+x-authentik-env: &authentik-env
+  AUTHENTIK_REDIS__HOST: redis
+  AUTHENTIK_REDIS__PASSWORD: ${REDIS_PASSWORD:?error}
+  AUTHENTIK_POSTGRESQL__HOST: postgres
+  AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+  AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+  AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:?error}
+  AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?error}
+  # Air-gap: disable all outbound telemetry and update checks
+  AUTHENTIK_DISABLE_UPDATE_CHECK: "true"
+  AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
+  AUTHENTIK_DISABLE_STARTUP_ANALYTICS: "true"
+  AUTHENTIK_AVATARS: "initials"
+
+x-authentik-vols: &authentik-vols
+  - ./data:/data
+  - ./custom-templates:/templates
+  - ./certs:/certs
+  - ./blueprints/custom:/blueprints/custom
+
 services:
   server:
-    image: ${DOCKER_IMAGE_REPO}${AUTHENTIK_IMAGE:-goauthentik/server:2023.10.6}
-    restart: unless-stopped
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:?error}
     command: server
-    environment: &authentik-env
-      AUTHENTIK_REDIS__HOST: redis
-      AUTHENTIK_POSTGRESQL__HOST: postgres
-      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
-      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
-      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:-authentik}
-      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?error}
-    ports:
-      - "${COMPOSE_PORT_HTTP:-9080}:9000"
-      - "${COMPOSE_PORT_HTTPS:-9443}:9443"
-    volumes: &authentik-vols
-      - media:/media
-    depends_on: &authentik-depends-on
-      - postgres
-      - redis
-    networks:
-      - proxy
-      - default
-  worker:
-    image: ${DOCKER_IMAGE_REPO}${AUTHENTIK_IMAGE:-goauthentik/server:2023.10.6}
     restart: unless-stopped
-    command: worker
-    user: root
+    shm_size: 512mb
     environment:
       <<: *authentik-env
     volumes: *authentik-vols
-    depends_on: *authentik-depends-on
-    networks:
-      - default
+    ports:
+      - "${AUTHENTIK_PORT_HTTP:-80}:9000"
+      - "${AUTHENTIK_PORT_HTTPS:-443}:9443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:9000/-/health/live/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
+    logging: *default-logging
 
-volumes:
-  database:
-  redis:
-  media:
-
-networks:
-  proxy:
-    external: true
+  worker:
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:?error}
+    command: worker
+    restart: unless-stopped
+    user: root
+    shm_size: 512mb
+    environment:
+      <<: *authentik-env
+    volumes: *authentik-vols
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "ak", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+    logging: *default-logging
