@@ -117,19 +117,45 @@ basalt-stack/web/authentik/
 
 ---
 
-## Phase 3 — Onyx OIDC Integration (TODO)
+## Phase 3 — Onyx OIDC Integration + Cleanup (2026-03-19)
 
-### Prerequisites
-- Phase 1 + Phase 2 runtime steps complete
-- Onyx stack running at port 3000
+### Status: COMPLETE (code changes)
 
-### Key Tasks
-- 3.1 Create OIDC Provider in Authentik (admin UI)
-- 3.2 Investigate: does Onyx need proxy provider, or just OIDC + outpost routing?
-- 3.3 TLS trust for Onyx → Authentik OIDC discovery (HTTP internal vs cert mount)
-- 3.4 Update Onyx .env (AUTH_TYPE=oidc, OIDC vars)
-- 3.5 Restart Onyx
-- 3.6 Cleanup: archive portal, update CLAUDE.md, close todo 022
+### What Was Done
+
+| Task | File(s) | Notes |
+|------|---------|-------|
+| 3.3 TLS trust decision | (research) | Chose HTTP for internal OIDC discovery (`host.docker.internal:9000`). Avoids self-signed cert trust issue. `custom_cert_oauth_client.patch` deferred to Phase 7. |
+| 3.4 Update Onyx .env | `onyx/deployment/docker_compose/.env` | Backed up as `.env.pre-authentik`. Set AUTH_TYPE=oidc, added OAUTH_CLIENT_ID/SECRET (placeholders), OPENID_CONFIG_URL (HTTP internal), WEB_DOMAIN=https://onyx.basalt.local |
+| 3.7a Archive portal | `basalt-stack/web/portal` → `basalt-stack/web/portal-archived` | Used `git mv` to preserve history |
+| 3.7b Update CLAUDE.md | `CLAUDE.md` | New architecture diagram (Authentik-centric), updated port table, startup sequence (Authentik before Onyx/Open-WebUI), env config section, added Authentik gotchas |
+| 3.7c Update system design | `docs/basalt-system-design.md` | Architecture diagram, service inventory (Authentik replaces Portal, 25 containers), startup order, telemetry table, development status |
+| 3.7d Update roadmap | `docs/plans/basalt-development-roadmap.md` | Track D: Authentik SSO marked DONE, running infra table updated |
+| 3.7e Close todo 022 | `todos/022-open-p2-portal-deployment-verification.md` | Status changed to `superseded`, added note about Authentik replacement |
+
+### Decisions Made
+
+1. **Proxy provider with auth (Option A):** Onyx gets BOTH an OIDC provider (for native OIDC callback flow) AND a proxy provider (for subdomain routing via embedded outpost). The proxy provider enforces Authentik session, while Onyx also does native OIDC. Since the user already has an Authentik session, the OIDC flow auto-completes (implicit consent) — effectively transparent double auth for defense-in-depth.
+2. **HTTP for internal OIDC discovery:** `OPENID_CONFIG_URL=http://host.docker.internal:9000/...` avoids SSL verification against self-signed cert. User-facing traffic still HTTPS via port 443. Known security debt for Phase 7.
+3. **Placeholder OIDC credentials:** `OAUTH_CLIENT_ID` and `OAUTH_CLIENT_SECRET` set to `<from-authentik-provider>` — values generated when OIDC provider is created in Authentik admin UI during deployment.
+4. **Portal archived, not deleted:** `git mv` preserves history. Files remain as rollback safety until Phase 3 runtime validation complete.
+
+### Deviations from Plan
+
+- Plan task 3.3 listed "apply custom_cert_oauth_client.patch" as primary approach with HTTP as alternative. We chose the HTTP alternative directly — simpler, no code changes to Onyx needed.
+- hosts-template.txt creation listed in 3.7 was already done in Phase 1 (task 1.7). Noted as "done in Phase 1" in plan checkbox.
+
+### Not Done (runtime / manual steps for Phase 3)
+
+- [ ] 3.1 Create Authentik OAuth2/OIDC Provider (admin UI): name `onyx-oidc`, client type confidential, redirect URI `https://onyx.basalt.local/auth/oidc/callback`, scopes `openid email profile`
+- [ ] 3.2 Create Authentik Proxy Provider (admin UI): name `onyx-proxy`, external `https://onyx.basalt.local`, internal `http://host.docker.internal:3000`, bind to embedded outpost, authorization flow `default-provider-authorization-implicit-consent`
+- [ ] 3.2b Create Application: name "Onyx", slug `onyx`, group "AI Services", bind both providers
+- [ ] 3.4b Replace `<from-authentik-provider>` placeholders in Onyx .env with actual client ID/secret from step 3.1
+- [ ] 3.5 Restart Onyx: `cd onyx/deployment/docker_compose && docker compose down && docker compose up -d`
+- [ ] 3.6 Add `onyx.basalt.local` to hosts file (already in hosts-template.txt)
+- [ ] Test: browse to `https://onyx.basalt.local` → Authentik login → OIDC callback → authenticated Onyx session
+- [ ] Test: cross-app SSO — already logged in via Open-WebUI → click Onyx tile → no re-login
+- [ ] Test: `OPENID_CONFIG_URL` resolves from Onyx container: `docker exec onyx-api_server-1 curl http://host.docker.internal:9000/application/o/onyx/.well-known/openid-configuration`
 
 ---
 

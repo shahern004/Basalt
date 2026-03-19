@@ -1,12 +1,15 @@
 ---
-status: open
+status: superseded
 priority: p2
 issue_id: "022"
 tags: [portal, deployment, verification]
 dependencies: []
+superseded_by: "Authentik SSO portal (feat/authentik-sso-integration)"
 ---
 
 # Portal Deployment Verification
+
+> **SUPERSEDED**: The nginx portal has been replaced by Authentik SSO (see `docs/plans/2026-03-17-001-feat-authentik-sso-portal-integration-plan.md`). Portal files archived to `basalt-stack/web/portal-archived/`.
 
 ## Problem Statement
 

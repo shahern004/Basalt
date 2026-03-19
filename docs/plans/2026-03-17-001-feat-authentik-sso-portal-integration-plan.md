@@ -430,14 +430,15 @@ cd basalt-stack/web/open-webui && docker compose down && docker compose up -d
   - If proxy provider IS needed: `external_host=https://onyx.basalt.local`, `internal_host=http://host.docker.internal:3000`, bind to embedded outpost
   - **Clarify session governance:** proxy session (cookie-based) vs OIDC session (token-based) — which controls access?
 
-- [ ] **3.3 Configure TLS trust for Onyx → Authentik OIDC discovery**
+- [x] **3.3 Configure TLS trust for Onyx → Authentik OIDC discovery**
   - Onyx's OIDC client calls Authentik's `.well-known/openid-configuration` endpoint
   - If Authentik uses a self-signed cert, this call fails with SSL verification error
   - Review and apply `onyx/deployment/docker_compose/custom_cert_oauth_client.patch`
   - Mount the Authentik CA certificate into the Onyx container
   - Alternative: set `OPENID_CONFIG_URL` to use HTTP (`http://host.docker.internal:9000/...`) for the internal OIDC discovery call, keeping HTTPS only for user-facing traffic
+  - **Decision: using HTTP for internal OIDC discovery. Patch deferred to Phase 7.**
 
-- [ ] **3.4 Back up and update Onyx environment** — `onyx/deployment/docker_compose/.env`
+- [x] **3.4 Back up and update Onyx environment** — `onyx/deployment/docker_compose/.env`
   - Back up first: `cp .env .env.pre-authentik`
   - Update:
   ```env
@@ -454,12 +455,12 @@ cd basalt-stack/web/open-webui && docker compose down && docker compose up -d
 
 - [ ] **3.6 Add `onyx.basalt.local` to hosts file** on the dev machine
 
-- [ ] **3.7 Cleanup tasks** (formerly Phase 4)
-  - Archive portal: `mv basalt-stack/web/portal basalt-stack/web/portal-archived`
+- [x] **3.7 Cleanup tasks** (formerly Phase 4)
+  - Archive portal: `git mv basalt-stack/web/portal basalt-stack/web/portal-archived`
   - Update `CLAUDE.md`: port table, architecture diagram, startup sequence, fix Authentik path
   - Update `docs/basalt-system-design.md` and roadmap
   - Close todo 022 as "superseded by Authentik"
-  - Create hosts file template at `basalt-stack/web/authentik/hosts-template.txt`
+  - Create hosts file template at `basalt-stack/web/authentik/hosts-template.txt` (done in Phase 1)
 
 #### Success Criteria
 

@@ -26,34 +26,40 @@ This stack runs on isolated networks with **no internet access at any point**:
 ## Architecture
 
 ```
-                          +-----------------+
-                          |   Open-WebUI    |
-                          |   (port 3002)   |
-                          +--------+--------+
-                                   |
-                          +--------+--------+
-                          |      Onyx       |
-                          |   (port 3000)   |
-                          +--------+--------+
-                                   |
-            +----------------------+----------------------+
-            |                      |                      |
-   +--------+--------+    +-------+-------+    +---------+---------+
-   |    LiteLLM      |    |   Langfuse    |    |       vLLM        |
-   |   (port 8000)   +--->|  (port 3001)  |    |    (port 8001)    |
-   +--------+--------+    +---------------+    +-------------------+
-            |                                        [Docker/GPU]
-            +----------------------------------------+
+  Client (browser)
+    │
+    │  DNS/hosts: *.basalt.local → <host-ip>
+    │
+    ▼
+  ┌──────────────────────────────────────────────┐
+  │         Authentik (port 443 / 9443)          │
+  │                                              │
+  │  auth.basalt.local → App Launcher / Login    │
+  │  webui.basalt.local → Proxy ────────────────►│──→ Open-WebUI (3002)
+  │  onyx.basalt.local  → Proxy + OIDC ─────────│──→ Onyx (3000)
+  │                                              │
+  │  Embedded Outpost (proxy mode)               │
+  └──────────────────────────────────────────────┘
+                        │
+                        │ host.docker.internal
+                        ▼
+              ┌─────────────────┐
+              │  LiteLLM (8000) │──→ Langfuse (3001)
+              └────────┬────────┘
+                       │
+              ┌────────▼────────┐
+              │   vLLM (8001)   │
+              └─────────────────┘
 ```
 
 | Service | Port | Compose Location |
 |---------|------|-----------------|
+| Authentik | 443 | `basalt-stack/web/authentik/` |
 | vLLM | 8001 | `basalt-stack/inference/vllm/` |
 | LiteLLM | 8000 | `basalt-stack/inference/litellm/` |
 | Langfuse | 3001 | `basalt-stack/inference/langfuse/` |
 | Onyx | 3000 | `onyx/deployment/docker_compose/` |
 | Open-WebUI | 3002 | `basalt-stack/web/open-webui/` |
-| Portal | 443 | `basalt-stack/web/portal/` |
 
 ## Networking
 
@@ -76,15 +82,15 @@ cd basalt-stack/inference/langfuse && docker compose up -d
 # 3. Start LiteLLM (LLM gateway)
 cd basalt-stack/inference/litellm && docker compose up -d
 
-# 4. Start Onyx (main platform)
+# 4. Start Authentik (SSO portal — must be up before Onyx/Open-WebUI for OIDC)
+cd basalt-stack/web/authentik && docker compose up -d
+# Browse: https://auth.basalt.local
+
+# 5. Start Onyx (main platform — AUTH_TYPE=oidc, uses Authentik)
 cd onyx/deployment/docker_compose && docker compose up -d
 
-# 5. (Optional) Start Open-WebUI
+# 6. (Optional) Start Open-WebUI
 cd basalt-stack/web/open-webui && docker compose up -d
-
-# 6. Start Portal (landing page with health dashboard)
-cd basalt-stack/web/portal && docker compose up -d
-# Browse: https://localhost
 ```
 
 ## Commands Quick Reference
@@ -114,6 +120,8 @@ pip install -r requirements.txt  # pre-staged wheels only (air-gap)
 - **Langfuse telemetry**: Must set `TELEMETRY_ENABLED=false` for air-gap. Check `basalt-stack/inference/langfuse/.env`
 - **vLLM version**: gpt-oss-20b requires **v0.10.2+** (MoE + MXFP4). See `docs/solutions/vllm-gpt-oss-20b-version-requirements.md`
 - **`gpt-4` alias**: `litellm-config.yaml` maps `gpt-4` → `gpt-oss-20b` so OpenAI-compatible clients work without reconfiguration
+- **Authentik subdomain routing**: Requires `*.basalt.local` entries in client hosts files. Template at `basalt-stack/web/authentik/hosts-template.txt`
+- **Onyx OIDC internal discovery**: Uses HTTP (`host.docker.internal:9000`) for OIDC discovery to avoid self-signed cert trust issues. Known security debt — Phase 7 will add cert trust via `custom_cert_oauth_client.patch`
 
 ## Environment Configuration
 
@@ -123,7 +131,7 @@ Key environment files:
 - `basalt-stack/inference/litellm/litellm-config.yaml` — Model routing to vLLM
 - `basalt-stack/inference/langfuse/.env` — Langfuse secrets
 - `onyx/deployment/docker_compose/.env` — Onyx configuration
-- `basalt-stack/web/open-webui/.env` — Open-WebUI settings
-- `basalt-stack/web/portal/.env` — Portal image and port settings
+- `basalt-stack/web/open-webui/.env` — Open-WebUI settings + Authentik shared-secret
+- `basalt-stack/web/authentik/.env` — Authentik secrets, ports, air-gap flags
 
 See `docs/plans/basalt-development-roadmap.md` for phased deployment plan.

@@ -11,17 +11,18 @@
 
 ### 1.1 Stack Topology
 
-Basalt runs as **five independent Docker Compose stacks** on a single host. Inter-stack communication uses `host.docker.internal` (container → host loopback → container). Intra-stack services use Docker service names.
+Basalt runs as **six independent Docker Compose stacks** on a single host. Inter-stack communication uses `host.docker.internal` (container → host loopback → container). Intra-stack services use Docker service names.
 
 ```
  ┌─────────────────────────────────────────────────────────────┐
  │                        HOST (Windows 11 + WSL2)             │
  │                                                             │
- │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────────┐  │
- │  │  Portal   │  │Open-WebUI│  │   Onyx   │  │  Authentik  │ │
- │  │ :443/:80  │  │  :3002   │  │  :3000   │  │ :9000/:9443 │ │
- │  │  nginx    │  │  Svelte  │  │ Next+Py  │  │  (Phase 6)  │ │
- │  └────┬─────┘  └────┬─────┘  └────┬─────┘  └─────────────┘ │
+ │  ┌──────────────────────────────────────────────────────┐   │
+ │  │  Authentik (SSO Portal)  :443/:80                    │   │
+ │  │  auth.basalt.local → App Launcher / Login            │   │
+ │  │  webui.basalt.local → Proxy → Open-WebUI :3002       │   │
+ │  │  onyx.basalt.local  → Proxy + OIDC → Onyx :3000     │   │
+ │  └──────────────────────────────────────────────────────┘   │
  │       │              │             │                         │
  │       └──────────────┼─────────────┘                         │
  │                      │  host.docker.internal                 │
@@ -63,9 +64,12 @@ Basalt runs as **five independent Docker Compose stacks** on a single host. Inte
 | | cache | `redis:7.4-alpine` | — | | |
 | | minio | `minio/minio` | — | | |
 | **Open-WebUI** | open-webui | `ghcr.io/open-webui/open-webui` | 3002 | 1 | `data` |
-| **Portal** | portal | `nginx:alpine` | 443, 80 | 1 | TLS certs (bind-mount) |
+| **Authentik** | server | `ghcr.io/goauthentik/server:2026.2.1` | 443, 80 | 4 | `data`, `certs`, PostgreSQL + Redis volumes |
+| | worker | same | — | | |
+| | postgres | `postgres:16-alpine` | — | | |
+| | redis | `redis:7.4-alpine` | — | | |
 
-**Total: ~22 containers across 6 stacks** (Authentik deferred to Phase 6).
+**Total: ~25 containers across 6 stacks** (Portal archived, replaced by Authentik).
 
 ### 1.3 Networking Model
 
@@ -91,9 +95,9 @@ Basalt runs as **five independent Docker Compose stacks** on a single host. Inte
 1. vLLM          (standalone, GPU model load ~5-10 min)
 2. Langfuse      (standalone, no upstream deps)
 3. LiteLLM       (depends: Langfuse for tracing, vLLM for inference)
-4. Onyx          (depends: LiteLLM for LLM calls)
-5. Open-WebUI    (depends: LiteLLM for LLM calls)
-6. Portal        (standalone, health-checks all services)
+4. Authentik     (standalone — must be up before Onyx/Open-WebUI for OIDC/SSO)
+5. Onyx          (depends: LiteLLM for LLM calls, Authentik for OIDC)
+6. Open-WebUI    (depends: LiteLLM for LLM calls, Authentik for SSO headers)
 ```
 
 ---
@@ -247,6 +251,7 @@ basalt-stack/tools/rmf-generator/
 | Open-WebUI | `SCARF_NO_ANALYTICS=true`, `DO_NOT_TRACK=true`, `ANONYMIZED_TELEMETRY=false` |
 | Langfuse | `TELEMETRY_ENABLED=false` |
 | LiteLLM | No outbound telemetry by default |
+| Authentik | `AUTHENTIK_DISABLE_UPDATE_CHECK=true`, `AUTHENTIK_ERROR_REPORTING__ENABLED=false`, `AUTHENTIK_DISABLE_STARTUP_ANALYTICS=true`, `AUTHENTIK_AVATARS=initials` |
 
 ---
 
@@ -274,4 +279,4 @@ basalt-stack/tools/rmf-generator/
 | C | C1 vLLM Model Setup | Pending | Model weights on Linux FS |
 | C | C2 Onyx Deploy | Blocked (C1) | Image pin, HF pre-stage |
 | C | C3 Open-WebUI Deploy | Blocked (C1) | Image pin, API config |
-| D | Hardening | Post-MVP | Authentik SSO, secrets, network segmentation |
+| D | Hardening | **Authentik SSO DONE** | Secrets rotation, network segmentation remaining |

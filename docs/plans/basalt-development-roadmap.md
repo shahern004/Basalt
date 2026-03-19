@@ -43,7 +43,7 @@ deepened: 2026-03-02
 | vLLM | **Image pulled, NOT running** | `vllm/vllm-openai:v0.10.2` (34.2GB) | — (model weights not downloaded) |
 | Onyx | **NOT running** | Not pulled (`latest` tag — pin before pulling) | — |
 | Open-WebUI | **NOT running** | Not pulled (`main` tag — pin before pulling) | — |
-| Authentik | Phase D (not started) | Not pulled | — |
+| Authentik | **Configured** (code complete) | `ghcr.io/goauthentik/server:2026.2.1` | server, worker, postgres, redis |
 
 ### Repo Health Issues
 
@@ -286,7 +286,7 @@ Requires model weights on disk. This is the blocker for live LLM inference.
 Not conversation-sized — these are milestones tracked here for planning. Prioritize based on deployment timeline.
 
 - **Air-Gap Packaging**: `docker save` all images (21+ containers across 5 stacks), pre-stage Python wheels, create offline installer script. Depends on C1-C3 complete. Note: circular dependency with C2/C3 on air-gapped target — run C1-C3 on connected dev machine first, then package.
-- **Authentik SSO**: Deploy Authentik (`basalt-stack/web/authentik/`), integrate with Onyx + Open-WebUI. Depends on C2-C3.
+- **~~Authentik SSO~~**: ~~Deploy Authentik, integrate with Onyx + Open-WebUI.~~ **DONE** (branch `feat/authentik-sso-integration`): Phase 1 core deployment, Phase 2 Open-WebUI SSO + security fixes, Phase 3 Onyx OIDC + cleanup. See `docs/plans/2026-03-17-001-feat-authentik-sso-portal-integration-plan.md`.
 - **Secret Rotation**: Replace all dev secrets with production-grade values. Rotate: Langfuse init password (`"password"`), Onyx Postgres (`password`), Redis auth (`myredissecret` in Langfuse), ClickHouse default password, LiteLLM master key. Use `openssl rand -hex 32` for each.
 - **Network Segmentation**: Docker network policies, remove `host.docker.internal` where possible, bind ports to `127.0.0.1`. Depends on Authentik.
 - **Monitoring & Backup**: Langfuse dashboards, Postgres backup strategy, add log rotation to all compose stacks (only vLLM currently has `max-size`/`max-file`), log aggregation.
