@@ -2,8 +2,12 @@
 status: resolved
 priority: p2
 issue_id: "007"
+category: todo
 tags: [code-review, documentation]
 dependencies: []
+related:
+  - "[[basalt-development-roadmap|roadmap]]"
+  - "[[basalt-system-design|system-design]]"
 ---
 
 # P2: Add root CLAUDE.md cross-reference to onyx/CLAUDE.md

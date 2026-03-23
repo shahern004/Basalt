@@ -1,3 +1,24 @@
+---
+title: "Basalt Stack — Developer Deployment Guide"
+date: 2026-03-19
+status: active
+category: guide
+tags:
+  - deployment
+  - developer
+  - docker
+  - setup
+aliases:
+  - deployment-guide
+  - dev-deploy
+related:
+  - "[[basalt-system-design|system-design]]"
+  - "[[basalt-development-roadmap|roadmap]]"
+  - "[[vllm-gpt-oss-20b-version-requirements|vllm-version]]"
+  - "[[clickhouse-alpine-healthcheck-fix|clickhouse-fix]]"
+  - "[[authentik-sso-integration-log|authentik-log]]"
+---
+
 # Basalt Stack — Developer Deployment Guide
 
 **Version:** 1.0

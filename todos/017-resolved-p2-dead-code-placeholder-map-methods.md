@@ -2,8 +2,11 @@
 status: resolved
 priority: p2
 issue_id: "017"
+category: todo
 tags: [code-review, dead-code, rmf-generator]
 dependencies: []
+related:
+  - "[[2026-03-02-rmf-doc-automation-oss-reuse-brainstorm|rmf-brainstorm]]"
 ---
 
 # Dead Code: placeholder_map() and signatory_replacements() in SystemDescription

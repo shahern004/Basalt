@@ -2,8 +2,11 @@
 status: resolved
 priority: p3
 issue_id: "012"
+category: todo
 tags: [code-review, documentation]
 dependencies: []
+related:
+  - "[[deployment-guide-dev|deployment-guide]]"
 ---
 
 # P3: Note that backend/log/ directory is created at runtime

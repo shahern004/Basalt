@@ -2,8 +2,12 @@
 status: resolved
 priority: p2
 issue_id: "005"
+category: todo
 tags: [code-review, documentation, roadmap, vllm]
 dependencies: []
+related:
+  - "[[basalt-development-roadmap|roadmap]]"
+  - "[[vllm-gpt-oss-20b-version-requirements|vllm-version]]"
 ---
 
 # P2: Update roadmap Phase 5.1 vLLM tag from v0.8.4 to v0.10.2

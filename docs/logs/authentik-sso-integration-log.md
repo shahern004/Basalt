@@ -1,3 +1,22 @@
+---
+title: "Authentik SSO Integration — Running Log"
+date: 2026-03-17
+status: active
+category: log
+tags:
+  - authentik
+  - sso
+  - integration
+  - deployment
+aliases:
+  - authentik-log
+  - sso-log
+related:
+  - "[[2026-03-17-001-feat-authentik-sso-portal-integration-plan|authentik-plan]]"
+  - "[[2026-03-17-authentik-sso-portal-brainstorm|authentik-brainstorm]]"
+  - "[[basalt-development-roadmap|roadmap]]"
+---
+
 # Authentik SSO Integration — Running Log
 
 ## Overview

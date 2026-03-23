@@ -2,8 +2,12 @@
 status: resolved
 priority: p3
 issue_id: "009"
+category: todo
 tags: [code-review, documentation, onyx]
 dependencies: []
+related:
+  - "[[basalt-system-design|system-design]]"
+  - "[[2026-03-17-001-feat-authentik-sso-portal-integration-plan|authentik-plan]]"
 ---
 
 # P3: Clarify test login note vs AUTH_TYPE=disabled

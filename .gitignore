@@ -31,6 +31,13 @@ basalt-stack/web/portal/certs/
 
 # Large binaries
 *.bin
+*.png
+
+# Generated output
+basalt-stack/tools/rmf-generator/output/
+
+# HTML exports
+*.html
 
 # Claude Code local overrides
 .claude.local.md

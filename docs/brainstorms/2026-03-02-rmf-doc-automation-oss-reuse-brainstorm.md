@@ -2,7 +2,21 @@
 title: "RMF Document Automation — OSS Reuse Strategy"
 date: 2026-03-02
 status: completed
-tags: [rmf, docxtpl, vllm, oscal, document-generation, air-gap]
+category: brainstorm
+tags:
+  - rmf
+  - docxtpl
+  - vllm
+  - oscal
+  - document-generation
+  - air-gap
+aliases:
+  - rmf-brainstorm
+  - rmf-oss-reuse
+related:
+  - "[[rmf-doc-automation-stack-selection|rmf-stack-decision]]"
+  - "[[rmf-generator-pivot-notes|rmf-pivot]]"
+  - "[[basalt-development-roadmap|roadmap]]"
 ---
 
 # Brainstorm: RMF Document Automation — OSS Reuse Strategy

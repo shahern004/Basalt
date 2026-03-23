@@ -2,7 +2,22 @@
 title: "Authentik SSO Portal Integration"
 date: 2026-03-17
 status: active
-tags: [authentik, sso, oidc, portal, open-webui, onyx, security]
+category: brainstorm
+tags:
+  - authentik
+  - sso
+  - oidc
+  - portal
+  - open-webui
+  - onyx
+  - security
+aliases:
+  - authentik-brainstorm
+  - sso-brainstorm
+related:
+  - "[[2026-03-17-001-feat-authentik-sso-portal-integration-plan|authentik-plan]]"
+  - "[[authentik-sso-integration-log|authentik-log]]"
+  - "[[basalt-development-roadmap|roadmap]]"
 ---
 
 # Authentik SSO Portal Integration — Brainstorm

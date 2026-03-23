@@ -2,8 +2,23 @@
 title: "feat: Authentik SSO Portal Integration"
 type: feat
 status: active
+category: plan
 date: 2026-03-17
 origin: docs/brainstorms/2026-03-17-authentik-sso-portal-brainstorm.md
+tags:
+  - authentik
+  - sso
+  - oidc
+  - integration
+  - security
+aliases:
+  - authentik-plan
+  - sso-plan
+related:
+  - "[[2026-03-17-authentik-sso-portal-brainstorm|authentik-brainstorm]]"
+  - "[[authentik-sso-integration-log|authentik-log]]"
+  - "[[basalt-development-roadmap|roadmap]]"
+  - "[[basalt-system-design|system-design]]"
 ---
 
 # Authentik SSO Portal Integration

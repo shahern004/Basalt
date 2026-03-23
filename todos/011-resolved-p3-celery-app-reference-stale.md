@@ -2,8 +2,11 @@
 status: resolved
 priority: p3
 issue_id: "011"
+category: todo
 tags: [code-review, documentation, onyx, celery]
 dependencies: []
+related:
+  - "[[basalt-development-roadmap|roadmap]]"
 ---
 
 # P3: Update stale celery_app.py reference in onyx/CLAUDE.md

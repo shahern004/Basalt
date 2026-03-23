@@ -2,8 +2,11 @@
 status: resolved
 priority: p3
 issue_id: "014"
+category: todo
 tags: [code-review, simplification]
 dependencies: ["006"]
+related:
+  - "[[basalt-system-design|system-design]]"
 ---
 
 # P3: Consider removing Technology Stack table from root CLAUDE.md

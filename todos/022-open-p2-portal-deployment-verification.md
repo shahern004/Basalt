@@ -2,9 +2,13 @@
 status: superseded
 priority: p2
 issue_id: "022"
+category: todo
 tags: [portal, deployment, verification]
 dependencies: []
 superseded_by: "Authentik SSO portal (feat/authentik-sso-integration)"
+related:
+  - "[[2026-03-17-001-feat-authentik-sso-portal-integration-plan|authentik-plan]]"
+  - "[[2026-03-17-authentik-sso-portal-brainstorm|authentik-brainstorm]]"
 ---
 
 # Portal Deployment Verification

@@ -1,3 +1,21 @@
+---
+title: "Meeting Prep — Software Director: Basalt Stack Deployment"
+date: 2026-03-19
+status: completed
+category: guide
+tags:
+  - meeting-prep
+  - deployment
+  - leadership
+  - status-update
+aliases:
+  - director-meeting-prep
+related:
+  - "[[basalt-development-roadmap|roadmap]]"
+  - "[[deployment-guide-dev|deployment-guide]]"
+  - "[[basalt-system-design|system-design]]"
+---
+
 # Meeting Prep — Software Director: Basalt Stack Deployment
 
 **Date:** 2026-03-19

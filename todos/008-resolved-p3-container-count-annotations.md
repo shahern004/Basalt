@@ -2,8 +2,11 @@
 status: resolved
 priority: p3
 issue_id: "008"
+category: todo
 tags: [code-review, documentation]
 dependencies: []
+related:
+  - "[[basalt-system-design|system-design]]"
 ---
 
 # P3: Add container count annotations to architecture diagram

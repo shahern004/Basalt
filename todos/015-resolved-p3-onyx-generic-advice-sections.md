@@ -2,8 +2,11 @@
 status: resolved
 priority: p3
 issue_id: "015"
+category: todo
 tags: [code-review, simplification, onyx]
 dependencies: []
+related:
+  - "[[basalt-development-roadmap|roadmap]]"
 ---
 
 # P3: Remove generic advice sections from onyx/CLAUDE.md

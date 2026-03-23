@@ -2,8 +2,12 @@
 status: resolved
 priority: p2
 issue_id: "001"
+category: todo
 tags: [code-review, architecture, documentation]
 dependencies: []
+related:
+  - "[[basalt-system-design|system-design]]"
+  - "[[basalt-development-roadmap|roadmap]]"
 ---
 
 # P2: Clarify host.docker.internal networking note

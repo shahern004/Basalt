@@ -2,8 +2,11 @@
 status: resolved
 priority: p2
 issue_id: "006"
+category: todo
 tags: [code-review, documentation, simplification]
 dependencies: []
+related:
+  - "[[basalt-development-roadmap|roadmap]]"
 ---
 
 # P2: Reduce duplication between root and onyx CLAUDE.md
@@ -46,9 +49,9 @@ Add "(see onyx/CLAUDE.md)" after each duplicated item.
 
 ## Acceptance Criteria
 
-- [ ] No content duplicated between root and onyx CLAUDE.md
-- [ ] Root CLAUDE.md clearly points to onyx/CLAUDE.md for Onyx-specific guidance
-- [ ] All unique infrastructure info preserved in root
+- [x] No content duplicated between root and onyx CLAUDE.md
+- [x] Root CLAUDE.md clearly points to onyx/CLAUDE.md for Onyx-specific guidance
+- [x] All unique infrastructure info preserved in root
 
 ## Work Log
 

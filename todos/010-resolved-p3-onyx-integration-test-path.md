@@ -2,8 +2,11 @@
 status: resolved
 priority: p3
 issue_id: "010"
+category: todo
 tags: [code-review, documentation, onyx]
 dependencies: []
+related:
+  - "[[basalt-development-roadmap|roadmap]]"
 ---
 
 # P3: Fix integration test example path in onyx/CLAUDE.md

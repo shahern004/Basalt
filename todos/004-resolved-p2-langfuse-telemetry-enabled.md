@@ -2,8 +2,12 @@
 status: resolved
 priority: p2
 issue_id: "004"
+category: todo
 tags: [code-review, security, air-gap, langfuse]
 dependencies: []
+related:
+  - "[[deployment-guide-dev|deployment-guide]]"
+  - "[[basalt-development-roadmap|roadmap]]"
 ---
 
 # P2: Disable Langfuse telemetry for air-gap compliance

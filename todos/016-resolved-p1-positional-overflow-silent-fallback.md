@@ -2,8 +2,12 @@
 status: resolved
 priority: p1
 issue_id: "016"
+category: todo
 tags: [code-review, correctness, rmf-generator]
 dependencies: []
+related:
+  - "[[2026-03-02-rmf-doc-automation-oss-reuse-brainstorm|rmf-brainstorm]]"
+  - "[[rmf-doc-automation-stack-selection|rmf-stack-decision]]"
 ---
 
 # Silent Fallback on Positional Placeholder Overflow

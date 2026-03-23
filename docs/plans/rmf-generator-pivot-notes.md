@@ -1,3 +1,22 @@
+---
+title: "RMF Generator — Pivot Notes"
+date: 2026-03-02
+status: completed
+category: plan
+tags:
+  - rmf
+  - pivot
+  - research
+  - docxtpl
+  - vllm
+aliases:
+  - rmf-pivot
+related:
+  - "[[2026-03-02-rmf-doc-automation-oss-reuse-brainstorm|rmf-brainstorm]]"
+  - "[[rmf-doc-automation-stack-selection|rmf-stack-decision]]"
+  - "[[basalt-development-roadmap|roadmap]]"
+---
+
 # RMF Generator — Pivot Notes (2026-03-02)
 
 ## Status: RESEARCH COMPLETE → Resuming with OSS Stack

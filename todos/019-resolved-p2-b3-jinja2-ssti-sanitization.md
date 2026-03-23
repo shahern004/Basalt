@@ -2,8 +2,11 @@
 status: resolved
 priority: p2
 issue_id: "019"
+category: todo
 tags: [code-review, security, rmf-generator, b3-prep]
 dependencies: []
+related:
+  - "[[rmf-doc-automation-stack-selection|rmf-stack-decision]]"
 ---
 
 # B3 Prep: Jinja2 Value Sanitization for LLM Output

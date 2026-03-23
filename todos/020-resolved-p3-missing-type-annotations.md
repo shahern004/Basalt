@@ -2,8 +2,11 @@
 status: resolved
 priority: p3
 issue_id: "020"
+category: todo
 tags: [code-review, quality, rmf-generator]
 dependencies: []
+related:
+  - "[[2026-03-02-rmf-doc-automation-oss-reuse-brainstorm|rmf-brainstorm]]"
 ---
 
 # Missing Type Annotations Across B1 Scripts

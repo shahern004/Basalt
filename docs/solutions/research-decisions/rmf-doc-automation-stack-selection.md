@@ -23,6 +23,13 @@ summary: >
   and selected docxtpl + vLLM native structured output + OSCAL catalog +
   YAML system context as the MVP stack for filling .docx RMF plan templates
   with LLM-generated content on an air-gapped network.
+aliases:
+  - rmf-stack-decision
+  - stack-selection
+related:
+  - "[[2026-03-02-rmf-doc-automation-oss-reuse-brainstorm|rmf-brainstorm]]"
+  - "[[rmf-generator-pivot-notes|rmf-pivot]]"
+  - "[[basalt-development-roadmap|roadmap]]"
 ---
 
 # RMF Document Automation — Stack Selection

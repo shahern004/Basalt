@@ -2,8 +2,12 @@
 status: resolved
 priority: p2
 issue_id: "018"
+category: todo
 tags: [code-review, architecture, rmf-generator, b3-prep]
 dependencies: []
+related:
+  - "[[rmf-doc-automation-stack-selection|rmf-stack-decision]]"
+  - "[[rmf-generator-pivot-notes|rmf-pivot]]"
 ---
 
 # B3 Design Decision: ODP Key Mapping Strategy

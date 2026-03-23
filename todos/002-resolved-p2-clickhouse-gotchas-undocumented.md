@@ -2,8 +2,12 @@
 status: resolved
 priority: p2
 issue_id: "002"
+category: todo
 tags: [code-review, documentation, langfuse, gotchas]
 dependencies: []
+related:
+  - "[[clickhouse-alpine-healthcheck-fix|clickhouse-fix]]"
+  - "[[basalt-system-design|system-design]]"
 ---
 
 # P2: Surface ClickHouse/Langfuse gotchas in CLAUDE.md

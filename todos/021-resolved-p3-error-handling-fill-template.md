@@ -2,8 +2,11 @@
 status: resolved
 priority: p3
 issue_id: "021"
+category: todo
 tags: [code-review, quality, rmf-generator]
 dependencies: []
+related:
+  - "[[2026-03-02-rmf-doc-automation-oss-reuse-brainstorm|rmf-brainstorm]]"
 ---
 
 # Error Handling Gaps in fill_template.py

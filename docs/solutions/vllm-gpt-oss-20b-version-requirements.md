@@ -3,6 +3,7 @@ title: "vLLM Version Requirements for gpt-oss-20b"
 module: vllm
 date: 2026-02-17
 problem_type: runtime-errors
+category: solution
 component: vllm-inference
 symptoms:
   - vLLM fails during model initialization with gpt-oss-20b
@@ -10,8 +11,20 @@ symptoms:
   - MXFP4 quantization kernels missing
 root_cause: "gpt-oss-20b requires MoE + MXFP4 support only available in vLLM v0.10.2+"
 severity: critical
-tags: [vllm, gpt-oss-20b, moe, mxfp4, version-pinning]
+tags:
+  - vllm
+  - gpt-oss-20b
+  - moe
+  - mxfp4
+  - version-pinning
 services: [vllm]
+aliases:
+  - vllm-version
+  - gpt-oss-20b-requirements
+related:
+  - "[[basalt-system-design|system-design]]"
+  - "[[deployment-guide-dev|deployment-guide]]"
+  - "[[basalt-development-roadmap|roadmap]]"
 ---
 
 # Problem

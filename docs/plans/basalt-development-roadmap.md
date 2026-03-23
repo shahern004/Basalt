@@ -2,10 +2,26 @@
 title: "Basalt Stack Development Roadmap"
 type: refactor
 status: active
+category: plan
 date: 2026-03-02
 deepened: 2026-03-02
+tags:
+  - roadmap
+  - planning
+  - tracks
+  - milestones
+aliases:
+  - roadmap
+  - dev-roadmap
+related:
+  - "[[2026-03-17-001-feat-authentik-sso-portal-integration-plan|authentik-plan]]"
+  - "[[rmf-generator-pivot-notes|rmf-pivot]]"
+  - "[[basalt-system-design|system-design]]"
+  - "[[deployment-guide-dev|deployment-guide]]"
+  - "[[basalt-sbom|SBOM]]"
+  - "[[rmf-doc-automation-stack-selection|rmf-stack-decision]]"
 ---
-
+cla
 # Basalt Stack Development Roadmap
 
 ## Enhancement Summary

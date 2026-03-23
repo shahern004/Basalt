@@ -2,8 +2,12 @@
 status: resolved
 priority: p2
 issue_id: "003"
+category: todo
 tags: [code-review, documentation, vllm, gotchas]
 dependencies: []
+related:
+  - "[[vllm-gpt-oss-20b-version-requirements|vllm-version]]"
+  - "[[basalt-development-roadmap|roadmap]]"
 ---
 
 # P2: Document vLLM version pinning requirement

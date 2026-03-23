@@ -1,3 +1,25 @@
+---
+title: "Basalt Stack — System Design Document"
+date: 2026-03-13
+status: active
+category: reference
+tags:
+  - architecture
+  - system-design
+  - air-gap
+  - infrastructure
+aliases:
+  - system-design
+  - SDD
+related:
+  - "[[basalt-development-roadmap|roadmap]]"
+  - "[[basalt-sbom|SBOM]]"
+  - "[[deployment-guide-dev|deployment-guide]]"
+  - "[[clickhouse-alpine-healthcheck-fix|clickhouse-fix]]"
+  - "[[vllm-gpt-oss-20b-version-requirements|vllm-version]]"
+  - "[[2026-03-17-001-feat-authentik-sso-portal-integration-plan|authentik-plan]]"
+---
+
 # Basalt Stack — System Design Document
 
 **Version:** 1.0

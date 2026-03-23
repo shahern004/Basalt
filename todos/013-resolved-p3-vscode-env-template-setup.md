@@ -2,8 +2,11 @@
 status: resolved
 priority: p3
 issue_id: "013"
+category: todo
 tags: [code-review, documentation, onyx]
 dependencies: []
+related:
+  - "[[deployment-guide-dev|deployment-guide]]"
 ---
 
 # P3: Document .vscode/.env setup from template
