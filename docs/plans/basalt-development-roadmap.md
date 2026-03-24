@@ -235,20 +235,23 @@ parsed = completion.choices[0].message.parsed  # Already a NarrativeOutput insta
 
 These efforts can happen anytime, independent of RMF demo. C2 and C3 are independent of each other — both only need LiteLLM (port 8000), not vLLM directly.
 
-### C1: vLLM Model Setup
+### C1: vLLM Model Setup — DONE (`7ddced6`, 2026-03-24)
 
-Requires model weights on disk. This is the blocker for live LLM inference.
+- [x] Download `openai/gpt-oss-20b` weights (3 safetensors shards, 12.9 GB)
+- [x] Model weights at `D:/BASALT/models/gpt-oss-20b` (Windows path via 9p bridge — Docker Desktop WSL2 integration not enabled for Ubuntu; native Linux FS deferred)
+- [x] `MODEL_PATH=D:/BASALT/models` in `.env`, `--model /models/gpt-oss-20b` in compose
+- [x] `max-model-len` bumped to 8192, `HF_HUB_OFFLINE=1` added, health check uses `/v1/models` readiness
+- [x] Start vLLM: model loads successfully, ~74 tokens/s generation throughput
+- [x] LiteLLM routing: both `gpt-oss-20b` and `gpt-4` alias → vLLM (200 OK)
+- [x] Chat completion verified: "NIST SP 800-53 is a catalog of security and privacy controls..."
+- [x] Langfuse traces captured with input/output/latency (~1-2s)
+- [x] WSL2 distros (Ubuntu + docker-desktop) relocated to `D:\WSL\` to free C:/ space
 
-- [ ] Download `openai/gpt-oss-20b` weights (safetensors format — vLLM v0.10.2 uses HuggingFace format, not GGUF)
-- [ ] Place weights in a **Linux filesystem path** (not Windows `D:\` — the 9p bridge adds 10-20x loading overhead). Recommended: `/mnt/wsl/` or a dedicated ext4 vhd
-- [ ] Update `MODEL_PATH` in `basalt-stack/inference/vllm/.env` to point to the Linux path
-- [ ] Start vLLM: `cd basalt-stack/inference/vllm && docker compose up -d`
-- [ ] Wait for health check (start_period is 600s / 10 min). Use `curl http://localhost:8001/v1/models` for readiness (not `/health` — that's liveness-only)
-- [ ] Verify LiteLLM routing: `curl http://localhost:8000/v1/models` shows `gpt-oss-20b`
-- [ ] Test chat completion through LiteLLM → vLLM
-- [ ] Check Langfuse for trace at `http://localhost:3001`
-
-**Test**: Full request path works: `curl localhost:8000/v1/chat/completions -H "Authorization: Bearer $LITELLM_MASTER_KEY" -d '{"model":"gpt-oss-20b","messages":[{"role":"user","content":"Hello"}]}'` → response + Langfuse trace visible.
+**Known issues discovered:**
+- `--async-scheduling` incompatible with structured output — remove for B3
+- LiteLLM v1.41.14 returns `content: null` for reasoning models (direct vLLM works)
+- `hosted_vllm/` provider prefix requires LiteLLM >= v1.50 (using `openai/` instead)
+- Langfuse Prisma migration `20241125124029` fails on fresh DB — resolved with `prisma migrate resolve`
 
 #### Research Insights (C1)
 
