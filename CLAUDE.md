@@ -4,6 +4,8 @@
 
 **Always ask the user for additional information pertaining to the subject at hand before filling the gap with assumptions.**
 
+**Prefer simple manual steps over complex automation.** When a GUI or settings panel can accomplish a configuration change, suggest that first before attempting scripts, registry hacks, or workarounds. Example: Docker Desktop disk image relocation is a 3-click GUI change — multiple automated approaches (junctions, WSL export/import, registry edits) all failed because Docker Desktop overwrites them on restart.
+
 ## Overview
 
 **Basalt Stack** is a **fully air-gapped** multi-project repository for self-hosted AI infrastructure on Windows 11 + WSL2 with NVIDIA GPU.
@@ -122,6 +124,12 @@ pip install -r requirements.txt  # pre-staged wheels only (air-gap)
 - **`gpt-4` alias**: `litellm-config.yaml` maps `gpt-4` → `gpt-oss-20b` so OpenAI-compatible clients work without reconfiguration
 - **Authentik subdomain routing**: Requires `*.basalt.local` entries in client hosts files. Template at `basalt-stack/web/authentik/hosts-template.txt`
 - **Onyx OIDC internal discovery**: Uses HTTP (`host.docker.internal:9000`) for OIDC discovery to avoid self-signed cert trust issues. Known security debt — Phase 7 will add cert trust via `custom_cert_oauth_client.patch`
+- **vLLM `--async-scheduling`**: Valid in v0.10.2 but **incompatible with structured output** (`response_format`). Must be removed when B3 (RMF structured output) lands. See GitHub issue #29379.
+- **LiteLLM reasoning model content**: LiteLLM v1.41.14 returns `content: null` for reasoning models that include `reasoning_content` in responses. Direct vLLM endpoint works correctly. Upgrade LiteLLM to fix.
+- **LiteLLM `hosted_vllm/` prefix**: Requires LiteLLM >= v1.50. Current v1.41.14 only supports `openai/` prefix.
+- **Langfuse `DIRECT_URL`**: Prisma migration commands need `DIRECT_URL` env var (same value as `DATABASE_URL`). Not in the default `.env` — must be passed via `-e` when running prisma commands manually.
+- **Docker Desktop storage on D:/**: Docker Desktop data is in `D:\WSL\docker-desktop\`. Ubuntu WSL2 distro is in `D:\WSL\Ubuntu\`. Both moved from C:/ to D:/ due to limited C:/ space.
+- **Model weights path**: `D:/BASALT/models/gpt-oss-20b` — mounted through 9p bridge (slower startup, ~2-5 min). Model loads into GPU memory once; disk speed irrelevant after.
 
 ## Environment Configuration
 

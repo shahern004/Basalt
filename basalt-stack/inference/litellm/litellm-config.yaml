@@ -1,6 +1,9 @@
 model_list:
   - model_name: gpt-oss-20b
     litellm_params:
+      # openai/ prefix for OpenAI-compatible vLLM endpoint
+      # Note: hosted_vllm/ prefix requires LiteLLM >= v1.50; pinned at v1.41.14
+      # response_format passthrough works with openai/ since it's a standard param
       model: openai/gpt-oss-20b
       api_base: http://host.docker.internal:8001/v1
     model_info:
@@ -13,7 +16,9 @@ model_list:
       api_base: http://host.docker.internal:8001/v1
 
 litellm_settings:
-  drop_params: true
+  # drop_params: false ensures unrecognized params raise errors instead of
+  # being silently stripped (prevents response_format from vanishing)
+  drop_params: false
   set_verbose: false
   success_callback: ["langfuse"]
   failure_callback: ["langfuse"]
@@ -21,4 +26,5 @@ litellm_settings:
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
   background_health_checks: true
-  health_check_interval: 300
+  # Reduced from 300s — 60s detects vLLM failures faster
+  health_check_interval: 60
