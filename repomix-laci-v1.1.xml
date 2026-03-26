@@ -1,0 +1,2234 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+2026-03-19-LACI_v1.1_SBOM.xlsx
+LACI_Stack_Deployment_Considerations.pdf
+LACI_Tech_Stack_OWASP_LLM_Safety_2025_Oct.pdf
+LACI-Overview-2025-Nov-21.pptx
+laci-stack-v1.1.tar.gz
+laci-stack-v1.1/.gitignore
+laci-stack-v1.1/inference/langfuse/.env.example
+laci-stack-v1.1/inference/langfuse/db/include.yaml
+laci-stack-v1.1/inference/langfuse/docker-compose.yaml
+laci-stack-v1.1/inference/litellm/.env.example
+laci-stack-v1.1/inference/litellm/db/include.yaml
+laci-stack-v1.1/inference/litellm/docker-compose.yaml
+laci-stack-v1.1/inference/litellm/litellm-config.yaml.example
+laci-stack-v1.1/inference/litellm/test-litellm.sh
+laci-stack-v1.1/inference/vllm/.env.example
+laci-stack-v1.1/inference/vllm/docker-compose.yaml
+laci-stack-v1.1/inference/vllm/gpt-oss-120b/include.yaml
+laci-stack-v1.1/inference/vllm/mistral-small/include.yaml
+laci-stack-v1.1/inference/vllm/pixtral-12b-awq/include.yaml
+laci-stack-v1.1/inference/vllm/pixtral-12b/include.yaml
+laci-stack-v1.1/inference/vllm/test-vllm.sh
+laci-stack-v1.1/README
+laci-stack-v1.1/utils/create-tarball.sh
+laci-stack-v1.1/utils/skopeo-copy-to-chq.sh
+laci-stack-v1.1/utils/transfer-images-to-chq.sh
+laci-stack-v1.1/web/authentik/.env.example
+laci-stack-v1.1/web/authentik/.gitignore
+laci-stack-v1.1/web/authentik/db/include.yaml
+laci-stack-v1.1/web/authentik/docker-compose.yaml
+laci-stack-v1.1/web/authentik/README.md
+laci-stack-v1.1/web/onyx/.env.example
+laci-stack-v1.1/web/onyx/data/nginx/app.conf
+laci-stack-v1.1/web/onyx/data/nginx/app.conf.template
+laci-stack-v1.1/web/onyx/data/nginx/app.conf.template.no-letsencrypt
+laci-stack-v1.1/web/onyx/data/nginx/app.conf.template.prod
+laci-stack-v1.1/web/onyx/data/nginx/run-nginx.sh
+laci-stack-v1.1/web/onyx/docker-compose.yaml
+laci-stack-v1.1/web/onyx/include/db.yaml
+laci-stack-v1.1/web/onyx/include/minio.yaml
+laci-stack-v1.1/web/onyx/include/nginx.yaml
+laci-stack-v1.1/web/onyx/include/vespa.yaml
+laci-stack-v1.1/web/open-webui/.env.example
+laci-stack-v1.1/web/open-webui/docker-compose.yaml
+US_QUOTE_3000198647755.2.pdf
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="laci-stack-v1.1/.gitignore">
+.env
+litellm-config.yaml
+</file>
+
+<file path="laci-stack-v1.1/inference/langfuse/.env.example">
+#####################################################################
+## Image tag / repo settings
+#####################################################################
+
+IMAGE_REPO_BASE="lnsvr0310.gcsd.harris.com:8443/laci-docker-io/"
+
+LANGFUSE_TAG="3.155.1"
+
+LANGFUSE_WEB_IMAGE="${IMAGE_REPO_BASE}langfuse/langfuse"
+LANGFUSE_WEB_TAG="${LANGFUSE_TAG}"
+LANGFUSE_WEB_PORT="3001"
+
+LANGFUSE_WORKER_IMAGE="${IMAGE_REPO_BASE}langfuse/langfuse-worker"
+LANGFUSE_WORKER_TAG="${LANGFUSE_TAG}"
+
+REDIS_IMAGE="${IMAGE_REPO_BASE}redis"
+REDIS_TAG="8.6.1-trixie"
+
+POSTGRES_IMAGE="${IMAGE_REPO_BASE}postgres"
+POSTGRES_TAG="18.3-alpine"
+
+CLICKHOUSE_IMAGE="${IMAGE_REPO_BASE}clickhouse/clickhouse-server"
+CLICKHOUSE_TAG="25.12-alpine"
+
+MINIO_IMAGE="${IMAGE_REPO_BASE}minio/minio"
+MINIO_TAG="RELEASE.2025-09-07T16-13-09Z"
+
+#####################################################################
+## Database connection settings
+#####################################################################
+
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=langfuse
+
+LANGFUSE_DATABASE_URL="postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/$POSTGRES_DB"
+
+#####################################################################
+## Langfuse settings
+#####################################################################
+
+## Generate with `openssl rand -hex 32`?
+LANGFUSE_SALT=6db7d0f739e6cd09b71dcf5926e98fe74e8d36ff3529958f29e66a72323ec76d
+
+## Generate with `openssl rand -hex 32`?
+NEXTAUTH_SECRET=dccc2487898150fa0276d2e4b27fb5a22c6f05c1651c16c3b76ca71871089b3f
+NEXTAUTH_URL="localhost:3001"
+
+## Generate with `openssl rand -hex 32`?
+ENCRYPTION_KEY=ed3e0c0ac6fb507926bf2929fe70dc7ddb3e25f795a325f7fb67f21b07a57e1c
+
+LANGFUSE_INIT_ORG_ID=1
+LANGFUSE_INIT_ORG_NAME=laci
+LANGFUSE_INIT_PROJECT_ID=1
+LANGFUSE_INIT_PROJECT_NAME=laci
+LANGFUSE_INIT_PROJECT_PUBLIC_KEY=pk-examplekey
+LANGFUSE_INIT_PROJECT_SECRET_KEY=sk-examplekey
+LANGFUSE_INIT_USER_EMAIL="laci@l3harris.com"
+LANGFUSE_INIT_USER_NAME="laci"
+LANGFUSE_INIT_USER_PASSWORD="examplepassword"
+</file>
+
+<file path="laci-stack-v1.1/inference/langfuse/db/include.yaml">
+---
+services:
+  redis:
+    image: ${REDIS_IMAGE}:${REDIS_TAG}
+    restart: always
+    volumes:
+      - redis_data:/data
+    command: >
+      --requirepass ${REDIS_AUTH:-myredissecret}
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+  
+  postgres:
+    image: ${POSTGRES_IMAGE}:${POSTGRES_TAG}
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:?error}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?error}
+      - POSTGRES_DB=${POSTGRES_DB:?error}
+    volumes:
+      - langfuse_postgres_data:/var/lib/postgresql/data
+
+  clickhouse:
+    image: ${CLICKHOUSE_IMAGE}:${CLICKHOUSE_TAG}
+    restart: always
+    user: "101:101"
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: clickhouse
+      CLICKHOUSE_PASSWORD: clickhouse
+    volumes:
+      - langfuse_clickhouse_data:/var/lib/clickhouse
+      - langfuse_clickhouse_logs:/var/log/clickhouse-server
+    healthcheck:
+      test: wget -q --tries=1 --spider http://127.0.0.1:8123/ping || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 1s
+
+  minio:
+    image: ${MINIO_IMAGE}:${MINIO_TAG}
+    restart: always
+    entrypoint: sh
+    # create the 'langfuse' bucket before starting the service
+    command: -c 'mkdir -p /data/langfuse && minio server --address ":9000" --console-address ":9001" /data'
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: miniosecret
+    volumes:
+      - langfuse_minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+      start_period: 1s
+
+volumes:
+  langfuse_postgres_data:
+    driver: local
+  langfuse_clickhouse_data:
+    driver: local
+  langfuse_clickhouse_logs:
+    driver: local
+  langfuse_minio_data:
+    driver: local
+  redis_data:
+    driver: local
+</file>
+
+<file path="laci-stack-v1.1/inference/langfuse/docker-compose.yaml">
+include:
+  - ./db/include.yaml
+services:
+  langfuse-worker:
+    image: ${LANGFUSE_WORKER_IMAGE}:${LANGFUSE_WORKER_TAG}
+    restart: always
+    depends_on: &langfuse-depends-on
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    environment: &langfuse-worker-env
+      DATABASE_URL: ${LANGFUSE_DATABASE_URL:-postgres://user:password@postgres:5432} # should be http:// ?
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?error}
+      SALT: ${LANGFUSE_SALT:?error}
+      TELEMETRY_ENABLED: ${TELEMETRY_ENABLED:-true}
+      LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES: ${LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES:-true}
+      CLICKHOUSE_MIGRATION_URL: ${CLICKHOUSE_MIGRATION_URL:-clickhouse://clickhouse:9000}
+      CLICKHOUSE_URL: ${CLICKHOUSE_URL:-http://clickhouse:8123}
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-clickhouse}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-clickhouse}
+      CLICKHOUSE_CLUSTER_ENABLED: ${CLICKHOUSE_CLUSTER_ENABLED:-false}
+      LANGFUSE_S3_EVENT_UPLOAD_BUCKET: ${LANGFUSE_S3_EVENT_UPLOAD_BUCKET:-langfuse}
+      LANGFUSE_S3_EVENT_UPLOAD_REGION: ${LANGFUSE_S3_EVENT_UPLOAD_REGION:-auto}
+      LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: ${LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID:-minio}
+      LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
+      LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: ${LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT:-http://minio:9000}
+      LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: ${LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE:-true}
+      LANGFUSE_S3_EVENT_UPLOAD_PREFIX: ${LANGFUSE_S3_EVENT_UPLOAD_PREFIX:-events/}
+      LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: ${LANGFUSE_S3_MEDIA_UPLOAD_BUCKET:-langfuse}
+      LANGFUSE_S3_MEDIA_UPLOAD_REGION: ${LANGFUSE_S3_MEDIA_UPLOAD_REGION:-auto}
+      LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: ${LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID:-minio}
+      LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY:-miniosecret}
+      LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: ${LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT:-http://minio:9000}
+      LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: ${LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE:-true}
+      LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: ${LANGFUSE_S3_MEDIA_UPLOAD_PREFIX:-media/}
+      LANGFUSE_INGESTION_QUEUE_DELAY_MS: ${LANGFUSE_INGESTION_QUEUE_DELAY_MS:-}
+      LANGFUSE_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS: ${LANGFUSE_INGESTION_CLICKHOUSE_WRITE_INTERVAL_MS:-}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_AUTH: ${REDIS_AUTH:-myredissecret}
+      REDIS_TLS_ENABLED: ${REDIS_TLS_ENABLED:-false}
+      REDIS_TLS_CA: ${REDIS_TLS_CA:-/certs/ca.crt}
+      REDIS_TLS_CERT: ${REDIS_TLS_CERT:-/certs/redis.crt}
+      REDIS_TLS_KEY: ${REDIS_TLS_KEY:-/certs/redis.key}
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://langfuse-worker:3030/api/health || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 1s
+
+
+  langfuse-web:
+    image: ${LANGFUSE_WEB_IMAGE}:${LANGFUSE_WEB_TAG}
+    restart: always
+    depends_on: *langfuse-depends-on
+    ports:
+      - ${LANGFUSE_WEB_PORT}:3000
+    environment:
+      <<: *langfuse-worker-env
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://langfuse.docker.localhost}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?error}
+      LANGFUSE_INIT_ORG_ID: ${LANGFUSE_INIT_ORG_ID:-}
+      LANGFUSE_INIT_ORG_NAME: ${LANGFUSE_INIT_ORG_NAME:-}
+      LANGFUSE_INIT_PROJECT_ID: ${LANGFUSE_INIT_PROJECT_ID:-}
+      LANGFUSE_INIT_PROJECT_NAME: ${LANGFUSE_INIT_PROJECT_NAME:-}
+      LANGFUSE_INIT_PROJECT_PUBLIC_KEY: ${LANGFUSE_INIT_PROJECT_PUBLIC_KEY:-}
+      LANGFUSE_INIT_PROJECT_SECRET_KEY: ${LANGFUSE_INIT_PROJECT_SECRET_KEY:-}
+      LANGFUSE_INIT_USER_EMAIL: ${LANGFUSE_INIT_USER_EMAIL:-}
+      LANGFUSE_INIT_USER_NAME: ${LANGFUSE_INIT_USER_NAME:-}
+      LANGFUSE_INIT_USER_PASSWORD: ${LANGFUSE_INIT_USER_PASSWORD:-}
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://langfuse-web:3000/api/public/health || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 1s
+    networks:
+      - default
+      - inference-endpoint
+
+networks:
+  inference-endpoint:
+    external: true
+</file>
+
+<file path="laci-stack-v1.1/inference/litellm/.env.example">
+#####################################################################
+## Image tag / repo settings
+#####################################################################
+
+IMAGE_REPO_BASE="lnsvr0310.gcsd.harris.com:8443/lacichq-docker/"
+
+LITELLM_IMAGE="${IMAGE_REPO_BASE}litellm/litellm-database"
+LITELLM_TAG="v1.81.15"
+
+REDIS_IMAGE="${IMAGE_REPO_BASE}redis"
+REDIS_TAG="8.6.1-trixie"
+
+POSTGRES_IMAGE="${IMAGE_REPO_BASE}postgres"
+POSTGRES_TAG="18.3-alpine"
+
+#####################################################################
+## Database connection settings
+#####################################################################
+
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=litellm
+DATABASE_URL="postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/$POSTGRES_DB"
+
+REDIS_AUTH="9d472cbd9ae3ffa34ec7600a398912a5992588c7f8f2cff3b023cdfbba4f573d" # openssl rand -hex 32
+
+#####################################################################
+## Litellm settings
+#####################################################################
+
+LITELLM_PORT="8000"
+
+## Generate a key with `echo "sk-$(openssl rand -hex 32)"`
+LITELLM_MASTER_KEY=sk-examplekey
+OPENAI_API_KEY=${LITELLM_MASTER_KEY}
+COHERE_API_KEY=${LITELLM_MASTER_KEY}
+
+## Generate with `openssl rand -hex 32`?
+NEXTAUTH_SECRET=dccc2487898150fa0276d2e4b27fb5a22c6f05c1651c16c3b76ca71871089b3f
+NEXTAUTH_URL="localhost:4000"
+
+## Generate with `openssl rand -hex 32`?
+ENCRYPTION_KEY=ed3e0c0ac6fb507926bf2929fe70dc7ddb3e25f795a325f7fb67f21b07a57e1c
+
+#####################################################################
+## Litellm -> Langfuse connection settings
+#####################################################################
+
+LANGFUSE_HOST="http://langfuse-web:3000" # internal docker url
+
+# These are acquired from the langfuse webui
+LANGFUSE_PUBLIC_KEY=pk-examplekey
+LANGFUSE_SECRET_KEY=sk-examplekey
+# To generate: run `echo "<publickey>:<secretkey>" | base64`
+# To check: run `echo "<auth string>" | base64 --decode`
+# Example value should decode to "pk-examplekey:sk-examplekey"
+LANGFUSE_AUTH='cGstZXhhbXBsZWtleTpzay1leGFtcGxla2V5Cg=='
+</file>
+
+<file path="laci-stack-v1.1/inference/litellm/db/include.yaml">
+---
+services:
+  redis:
+    image: ${REDIS_IMAGE}:${REDIS_TAG}
+    restart: always
+    volumes:
+      - redis_data:/data
+    command: >
+      --requirepass ${REDIS_AUTH:?error}
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+
+  postgres:
+    image: ${POSTGRES_IMAGE}:${POSTGRES_TAG}
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:?error}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?error}
+      - POSTGRES_DB=${POSTGRES_DB:?error}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
+</file>
+
+<file path="laci-stack-v1.1/inference/litellm/docker-compose.yaml">
+include:
+  - ./db/include.yaml
+services:
+  litellm:
+    image: ${LITELLM_IMAGE:?error}:${LITELLM_TAG:?error}
+    restart: always
+    ports:
+      - ${LITELLM_PORT:?error}:8000
+    volumes:
+      - ./litellm-config.yaml:/app/config.yaml
+    command: --port ${LITELLM_PORT:?error} --config config.yaml
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:?error}
+      COHERE_API_KEY: ${COHERE_API_KEY:?error}
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?error} 
+      DATABASE_URL: ${DATABASE_URL:-} 
+      LANGFUSE_HOST: ${LANGFUSE_HOST:-}
+      LANGFUSE_AUTH: ${LANGFUSE_AUTH:-}
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_AUTH:?error}
+      OTEL_EXPORTER: 'otlp_http'
+      OTEL_ENDPOINT: ${LANGFUSE_HOST}/api/public/otel/v1/traces
+      OTEL_HEADERS: "Authorization=Basic ${LANGFUSE_AUTH}"
+    networks:
+      - default
+      - inference-endpoint
+
+networks:
+  inference-endpoint:
+    external: true
+</file>
+
+<file path="laci-stack-v1.1/inference/litellm/litellm-config.yaml.example">
+model_list:
+  ## the `openai/` prefix tells litellm it's openai compatible
+  ## Uncomment the block for the model you're running
+
+  - model_name: openai/gpt-oss-120b
+    litellm_params:
+      model: openai/openai/gpt-oss-120b
+      api_base: "http://gpt-oss-120b:8000/v1"
+
+  #- model_name: mistralai/Mistral-Small-3.2-24B-Instruct-2506
+  #  litellm_params:
+  #    model: openai/mistralai/Mistral-Small-3.2-24B-Instruct-2506
+  #    api_base: "http://mistral-small:8000/v1"
+
+  #- model_name: mistralai/Pixtral-12B-2409
+  #  litellm_params:
+  #    model: openai/mistralai/Pixtral-12B-2409
+  #    api_base: "http://pixtral-12b:8000/v1"
+
+  #- model_name: mistral-community/pixtral-12b
+  #  litellm_params:
+  #    model: openai/mistral-community/pixtral-12b
+  #    api_base: "http://pixtral-12b-awq:8000/v1"
+
+litellm_settings:
+  drop_params: True
+  success_callback: ["langfuse"]
+  failure_callback: ["langfuse"]
+  callbacks: ["otel"]
+
+general_settings:
+  background_health_checks: True
+  health_check_interval: 300
+</file>
+
+<file path="laci-stack-v1.1/inference/litellm/test-litellm.sh">
+#! /bin/bash
+## A script to test out your vllm instance
+
+OPENAI_API_KEY=sk-examplekey
+
+# uncomment the line for your model
+#MODEL="mistral-community/pixtral-12b"
+#MODEL="mistralai/Pixtral-12B-2409"
+#MODEL="mistralai/Mistral-Small-3.2-24B-Instruct-2506"
+MODEL="openai/gpt-oss-120b"
+
+LITELLM_BASE_URL="http://localhost:8000"
+
+curl -sS --location ${LITELLM_BASE_URL}/v1/models \
+    --header 'Content-Type: application/json' \
+    --header 'Authorization: Bearer '${OPENAI_API_KEY}
+echo
+
+curl -sS --location ${LITELLM_BASE_URL}/v1/chat/completions \
+    --header 'Content-Type: application/json' \
+    --header 'Authorization: Bearer '${OPENAI_API_KEY} \
+    --data ' {
+      "model": "'${MODEL}'",
+      "messages": [
+        {
+          "role": "user",
+          "content": "what llm are you"
+        }
+      ]
+    }'
+echo
+</file>
+
+<file path="laci-stack-v1.1/inference/vllm/.env.example">
+#####################################################################
+## Image and Repo Settings
+#####################################################################
+
+DOCKER_IMAGE_REPO="lnsvr0310.gcsd.harris.com:8443/lacichq-docker/"
+
+VLLM_IMAGE="${IMAGE_REPO_BASE}vllm/vllm-openai"
+VLLM_TAG=v0.17.1
+ 
+#####################################################################
+## HuggingFace Settings
+#####################################################################
+
+HF_CACHE=/mnt/hf
+
+#####################################################################
+## VLLM Settings
+#####################################################################
+
+VLLM_API_PORT=8001
+</file>
+
+<file path="laci-stack-v1.1/inference/vllm/docker-compose.yaml">
+---
+# Uncomment one model at a time to select which configuration will be loaded
+include:
+  - ./gpt-oss-120b/include.yaml
+#  - ./mistral-small/include.yaml
+#  - ./pixtral-12b/include.yaml
+#  - ./pixtral-12b-awq/include.yaml
+</file>
+
+<file path="laci-stack-v1.1/inference/vllm/gpt-oss-120b/include.yaml">
+---
+services:
+  gpt-oss-120b:
+    image: ${VLLM_IMAGE:?error}:${VLLM_TAG:?error}
+    restart: unless-stopped
+    environment:
+      HF_HUB_OFFLINE: "True"
+      HF_HUB_DOWNLOAD_TIMEOUT: 1
+      HF_HUB_ETAG_TIMEOUT: 1
+      COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
+      CUDA_VISIBLE_DEVICES: all
+      VLLM_ATTENTION_BACKEND: TRITON_ATTN_VLLM_V1
+      TIKTOKEN_ENCODINGS_BASE: /root/.cache/huggingface/tiktoken_cache
+      VLLM_ENGINE_ITERATION_TIMEOUT_S: 1200 # 20 mins
+      VLLM_EXECUTE_MODEL_TIMEOUT_SECONDS: 1200 # 20 mins
+      VLLM_RPC_TIMEOUT: 1200000 # (ms) 20 mins
+    shm_size: 10gb
+    ipc: host
+
+    volumes:
+      - ${HF_CACHE:?/mnt/hf}:/root/.cache/huggingface
+
+    command: >
+      --host 0.0.0.0
+      --gpu-memory-utilization 0.9
+      --tensor-parallel-size 4
+      --max-model-len 64000
+      --model openai/gpt-oss-120b
+    env_file:
+      - ../.env
+    ports:
+      - ${VLLM_API_PORT:-8001}:8000
+
+    logging:
+      driver: json-file
+      options:
+        max-file: "3"
+        max-size: '10m'
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8000/health/"]
+      interval: 30s
+      timeout: 3s
+      start_period: 45s
+      start_interval: 5s
+
+    deploy:
+      replicas: 1
+      restart_policy:
+        max_attempts: 5
+        condition: on-failure
+        delay: 10s
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 4
+              capabilities: [gpu]
+
+    networks:
+      - inference-endpoint
+networks:
+  inference-endpoint:
+    external: true
+</file>
+
+<file path="laci-stack-v1.1/inference/vllm/mistral-small/include.yaml">
+---
+services:
+  mistral-small:
+    image: ${VLLM_IMAGE:?error}:${VLLM_TAG:?error}
+    restart: unless-stopped
+    environment:
+      HF_HUB_OFFLINE: "True"
+      HF_HUB_DOWNLOAD_TIMEOUT: 1
+      HF_HUB_ETAG_TIMEOUT: 1
+      COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
+      CUDA_VISIBLE_DEVICES: all
+    shm_size: 10gb
+
+    volumes:
+      - ${HF_CACHE:?/mnt/hf}:/root/.cache/huggingface
+
+    command: >
+      --host 0.0.0.0
+      --dtype bfloat16
+      --swap-space 4
+      --disable-log-requests
+      --gpu-memory-utilization 0.96
+      --max-model-len 64000
+      --tensor-parallel-size 4
+      --load-format mistral
+      --config-format mistral
+      --tokenizer-mode mistral
+      --tool-call-parser mistral
+      --enable-auto-tool-choice
+      --limit_mm_per_prompt 'image=10'
+      --model mistralai/Mistral-Small-3.2-24B-Instruct-2506
+    env_file:
+      - ../.env
+    ports:
+      - ${VLLM_API_PORT:-8001}:8000
+
+    logging:
+      driver: json-file
+      options:
+        max-file: "3"
+        max-size: '10m'
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8000/health/"]
+      interval: 30s
+      timeout: 3s
+      start_period: 45s
+      start_interval: 5s
+
+    deploy:
+      replicas: 1
+      restart_policy:
+        max_attempts: 5
+        condition: on-failure
+        delay: 10s
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 4
+              capabilities: [gpu]
+
+    networks:
+      - inference-endpoint
+networks:
+  inference-endpoint:
+    external: true
+</file>
+
+<file path="laci-stack-v1.1/inference/vllm/pixtral-12b-awq/include.yaml">
+---
+services:
+  pixtral-12b-awq:
+    image: ${VLLM_IMAGE:?error}:${VLLM_TAG:?error}
+    restart: unless-stopped
+    environment:
+      HF_HUB_OFFLINE: "True"
+      HF_HUB_DOWNLOAD_TIMEOUT: 1
+      HF_HUB_ETAG_TIMEOUT: 1
+      COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
+      CUDA_VISIBLE_DEVICES: all
+      
+    volumes:
+      - ${HF_CACHE:?/mnt/hf}:/root/.cache/huggingface
+
+    command: >
+      --host 0.0.0.0
+      --dtype float16
+      --swap-space 4
+      --disable-log-requests
+      --gpu-memory-utilization 0.9
+      --max-model-len 32000
+      --served-model-name mistral-community/pixtral-12b
+      --model /root/.cache/huggingface/hub/pixtral-12b-awq-asym-fp16
+    env_file:
+      - ../.env
+    ports:
+      - ${VLLM_API_PORT:-8001}:8000
+
+    logging:
+      driver: json-file
+      options:
+        max-file: "3"
+        max-size: '10m'
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8000/health/"]
+      interval: 30s
+      timeout: 3s
+      start_period: 45s
+      start_interval: 5s
+
+    deploy:
+      replicas: 1
+      restart_policy:
+        max_attempts: 5
+        condition: on-failure
+        delay: 10s
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+    networks:
+      - inference-endpoint
+networks:
+  inference-endpoint:
+    external: true
+</file>
+
+<file path="laci-stack-v1.1/inference/vllm/pixtral-12b/include.yaml">
+---
+services:
+  pixtral-12b:
+    image: ${VLLM_IMAGE:?error}:${VLLM_TAG:?error}
+    restart: unless-stopped
+    environment:
+      HF_HUB_OFFLINE: "True"
+      HF_HUB_DOWNLOAD_TIMEOUT: 1
+      HF_HUB_ETAG_TIMEOUT: 1
+      COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
+      CUDA_VISIBLE_DEVICES: all
+
+    volumes:
+      - ${HF_CACHE:?/mnt/hf}:/root/.cache/huggingface
+
+    command: >
+      --host 0.0.0.0
+      --dtype float16
+      --swap-space 4
+      --disable-log-requests
+      --gpu-memory-utilization 0.9
+      --max-model-len 128000
+      --tensor-parallel-size 2
+      --load-format mistral
+      --config-format mistral
+      --tokenizer-mode mistral
+      --model mistralai/Pixtral-12B-2409
+    env_file:
+      - ../.env
+    ports:
+      - ${VLLM_API_PORT:-8001}:8000
+
+    logging:
+      driver: json-file
+      options:
+        max-file: "3"
+        max-size: '10m'
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://0.0.0.0:8000/health/"]
+      interval: 30s
+      timeout: 3s
+      start_period: 45s
+      start_interval: 5s
+
+    deploy:
+      replicas: 1
+      restart_policy:
+        max_attempts: 5
+        condition: on-failure
+        delay: 10s
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 2
+              capabilities: [gpu]
+
+    networks:
+      - inference-endpoint
+networks:
+  inference-endpoint:
+    external: true
+</file>
+
+<file path="laci-stack-v1.1/inference/vllm/test-vllm.sh">
+#! /bin/bash
+## A script to test out your vllm instance
+
+OPENAI_API_KEY=sk-examplekey
+
+# uncomment the line for your model
+#MODEL="mistral-community/pixtral-12b"
+#MODEL="mistralai/Pixtral-12B-2409"
+#MODEL="mistralai/Mistral-Small-3.2-24B-Instruct-2506"
+MODEL="openai/gpt-oss-120b"
+
+VLLM_BASE_URL="http://localhost:8001"
+
+## Uncomment to see a the list of models (so only one)
+## that the vllm instance is serving currently, along
+## with some model config details
+
+#curl --location ${VLLM_BASE_URL}/v1/models \
+#    --header 'Content-Type: application/json' \
+#    --header 'Authorization: Bearer '${OPENAI_API_KEY}
+#echo
+
+curl --location ${VLLM_BASE_URL}/v1/chat/completions \
+    --header 'Content-Type: application/json' \
+    --header 'Authorization: Bearer '${OPENAI_API_KEY} \
+    --data ' {
+      "model": "'${MODEL}'",
+      "messages": [
+        {
+          "role": "user",
+          "content": "what llm are you"
+        }
+      ]
+    }'
+
+echo
+</file>
+
+<file path="laci-stack-v1.1/README">
+# LACI Stack
+
+## Getting Started
+
+### Pre-configuration
+Your hosting machine will need at a minumum:
+
+- Be accessible on port 443 from downstream client computers.
+- Have a (preferrably wildcard) DNS entry pointing to the system.
+  - We have an entry for laci.l3harris.com, and and entry for *.laci.l3harris.com pointing to the external IP of our network.
+  - This allows you to route network traefik to apps in authentik via hostnames (api.laci, auth.laci, open-webui.laci, etc...).
+  - You can achieve this by manually specifying all DNS entries if needed, it's just easier to get a wildcard SSL cert with a wildcard DNS entry.
+- Have a valid SSL Certificate for the above domains.
+- Docker and docker-compose installed and enabled.
+- Have the laci-stack repo cloned down.
+- Have huggingface cache data for whatever model(s) you intend to use pulled on to the machine.
+- Have all the needed docker images from the lacichq-docker artifactory repo either accessible or manually pulled in and loaded in to the docker daemon.
+
+### Pulling in Models
+Run
+```bash
+huggingface-cli download <org/model-id>
+```
+from a machine that can access huggingface, then transfer the contents of your `~/.cache/huggingface/` directory on to your hosting machine.
+
+### Docker Networks
+``` bash
+sudo docker network create proxy inference
+```
+
+### Auth / Proxy
+#### Configuartion
+```bash
+cp web/authentik/.env.example web/authentik/.env
+vim web/authentik/.env
+# Change any values you need, particularly the secret keys and passwords
+```
+
+#### Starting
+```bash
+cd web/authentik/
+sudo docker compose up -d && sudo docker compose logs -f
+# Confirm that the container comes up without major issues
+```
+Configure whatever (federated or not) auth source you will be using (authentik internal user db, LDAP, SAML, etc...)
+Check out [this section](https://docs.goauthentik.io/install-config/) to get started, and [this section](https://docs.goauthentik.io/users-sources/sources/) to learn about auth source options.
+
+### vLLM
+#### Configuration
+```bash
+cp inferencing/vllm/.env.example inferencing/vllm/.env
+vim inferencing/vllm/.env
+# Change any values you need, particularly setting the location you saved your huggingface cache data.
+
+vim inferencing/vllm/docker-compose.yaml
+# Choose which model settings you'll be loading
+```
+
+#### Starting
+```bash
+cd inferencing/vllm/
+sudo docker compose up -d && sudo docker compose logs -f
+# Confirm that the container comes up without major issues
+```
+
+#### Testing
+Run
+```bash
+cd inferencing/vllm/
+./test-vllm.sh
+```
+to confirm that vLLM is running correctly.
+
+### LiteLLM
+#### Configuration
+```bash
+cp inferencing/litellm/.env.example inferencing/litellm/.env
+vim inferencing/litellm/.env
+# Change any values you need
+
+vim inferencing/litellm/litellm-config.yaml
+# Choose which model settings you'll be loading
+```
+
+#### Starting
+```bash
+cd inferencing/litellm/
+sudo docker compose up -d && sudo docker compose logs -f
+# Confirm that the container comes up without major issues
+```
+
+#### Testing
+Run
+```bash
+cd inferencing/litellm/
+./test-litellm.sh
+```
+to confirm that Litellm is running correctly.
+
+
+### Langfuse
+#### Configuration
+```bash
+cp inferencing/langfuse/.env.example inferencing/langfuse/.env
+vim inferencing/langfuse/.env
+# Change any values you need, particularly the secret keys and passwords
+```
+
+#### Starting
+```bash
+cd inferencing/langfuse/
+sudo docker compose up -d && sudo docker compose logs -f
+# Confirm that the container comes up without major issues
+```
+
+#### Testing
+Pull up the langfuse web interface, create account / login, then run the test-litellm.sh script and confirm you see a trace in langfuse.
+
+### Open-webui
+#### Configuration
+```bash
+cp web/open-webui/.env.example web/open-webui/.env
+vim web/open-webui/.env
+# Change any values you need, particularly the secret keys and passwords
+```
+
+#### Starting
+```bash
+cd web/open-webui/
+sudo docker compose up -d && sudo docker compose logs -f
+# Confirm that the container comes up without major issues
+```
+
+#### Testing
+Pull up the webui, log in, configure a model, then start a chat with it and get a response.
+
+### Onyx
+#### Configuration
+```bash
+cp web/onyx/.env.example web/onyx/.env
+vim web/onyx/.env
+# Change any values you need, particularly the secret keys and passwords
+# Set up an oauth provider in Authentik, put the details in the oauth section
+```
+
+#### Starting
+```bash
+cd web/onyx/
+sudo docker compose up -d && sudo docker compose logs -f
+# Confirm that the container comes up without major issues
+```
+
+#### Testing
+Pull up the webui, log in, configure a model, then start a chat with it and get a response.
+
+
+# Important Networking Details
+
+There are two "shared" docker networks used in the LACI stack.
+
+## Proxy
+Proxy is a shared network that is used to connect your reverse proxy (Authentik in our case) to all the web frontend containers, so that container names can be used in authentik (`http://open-webui:8080`, `http://litellm:8000`, etc...) for the internal URL. This leverages Docker's internal DNS resolution system to simplify access to the containers. You can still use the host-side port mapping and host IP (`http://<ip address>:3001`, `http://<ip address>:8000`, etc...) if you want, either way will work.
+
+## Inference
+Inference is a docker network used to connect the inferencing services (litellm, vllm) to the inferencing API consumers and obeservability tools (open-webui, langfuse) by service name (`http://vllm:8000`, etc...).
+
+# Image Provenance
+The [transfer-image-to-chq.sh](./utils/transfer-image-to-chq.sh) script shows how the source images are pushed to the lacichq-docker repo.
+Images pulled from laci-\<upstream>-io are from docker.io or ghcr.io, and have not been rebuilt by the LACI team.
+Images pulled from laci-docker have been rebuilt by the LACI team to incorporate changes made to streamline usage of upstream apps with the LACI Stack.
+</file>
+
+<file path="laci-stack-v1.1/utils/create-tarball.sh">
+tar -czvf ../../laci-stack-v1.1.tar.gz --exclude=".git" -C ../. .
+</file>
+
+<file path="laci-stack-v1.1/utils/skopeo-copy-to-chq.sh">
+#!/usr/bin/env bash
+# skopeo-copy-to-chq.sh – copy an image to a sub-directory within the same registry
+
+set -euo pipefail
+
+# Determine if we need sudo for Docker commands
+if id -nG "$(whoami)" | grep -qw docker; then
+  DOCKER_CMD="docker"
+else
+  DOCKER_CMD="sudo docker"
+fi
+
+if [[ "${1}" == "--bootstrap" ]]; then
+  # Optional second argument: path to Docker config.json (default to $HOME/.docker/config.json)
+  CONFIG_PATH="${2:-$HOME/.docker/config.json}"
+
+  # Ensure script runs as root for bootstrap operations
+  if [[ "$(id -u)" -ne 0 ]]; then
+    echo "Please note that you may need to run this script as root for bootstrapping with a root-owned config.json" >&2
+  fi
+
+  # Ensure Docker volume for skopeo auth exists
+  VOLUME_NAME="dot-docker-dir"
+  if ! ${DOCKER_CMD} volume inspect "$VOLUME_NAME" >/dev/null 2>&1; then
+    ${DOCKER_CMD} volume create "$VOLUME_NAME" >/dev/null 2>&1 || true
+  fi
+
+  # Copy host Docker config into the volume if it exists
+  if [[ -f "$CONFIG_PATH" ]]; then
+    ${DOCKER_CMD} run --rm -v "$VOLUME_NAME:/root/.docker" -v "$CONFIG_PATH:/config.json:ro" alpine sh -c 'mkdir -p /root/.docker && cp /config.json /root/.docker/config.json' >/dev/null 2>&1 || true
+  else
+    echo "Warning: $CONFIG_PATH not found, skipping copy" >&2
+    exit 1
+  fi
+  exit 0
+elif [[ $# -ne 2 ]] || [[ $# -le 0 ]]; then
+  echo "copy an image to the laci-chq repo"
+  echo "Usage: $0 <source-repo-slug:tag> <dest-subdir-repo-slug:tag>"
+  echo "Example: $0 laci-docker-io/ubuntu:latest laci/ubuntu:latest"
+  echo "Example: $0 --bootstrap # to set up docker repo auth"
+  exit 1
+fi
+
+#SKOPEO_IMAGE="quay.io/skopeo/stable:latest"
+SKOPEO_IMAGE="lnsvr0310.gcsd.harris.com:8443/laci-docker/skopeo:latest"
+
+SRC_SLUG="$1"          # e.g. laci-docker-io/ubuntu:latest
+DEST_SUBDIR_SLUG="$2"  # e.g. laci/ubuntu:latest
+
+REGISTRY="docker://lnsvr0310.gcsd.harris.com:8443"
+
+SRC="${REGISTRY}/${SRC_SLUG}"
+DEST="${REGISTRY}/lacichq-docker/${DEST_SUBDIR_SLUG}"
+
+# Define colors for output
+GREY='\e[90m'
+GREEN='\e[32m'
+BLUE='\e[34m'
+RESET='\e[0m'
+
+echo -e "${GREY}${REGISTRY}${RESET}/${BLUE}${SRC_SLUG}${RESET} -> ${GREY}${REGISTRY}${RESET}/lacichq-docker/${GREEN}${DEST_SUBDIR_SLUG}${RESET}"
+
+# Run skopeo copy via the container wrapper
+${DOCKER_CMD} run -v dot-docker-dir:/root/.docker/:ro \
+    ${SKOPEO_IMAGE} copy \
+    --authfile=/root/.docker/config.json \
+    --src-tls-verify=false \
+    --dest-tls-verify=false \
+    "${SRC}" "${DEST}"
+</file>
+
+<file path="laci-stack-v1.1/utils/transfer-images-to-chq.sh">
+#!/bin/bash
+
+common=(
+    "laci-docker-io/redis:8.6.1-trixie                               redis:8.6.1-trixie"
+    "laci-docker-io/nginx:1.23.4-alpine                              nginx:1.23.4-alpine"
+    "laci-docker-io/postgres:18.3-alpine                             postgres:18.3-alpine"
+    "laci-docker-io/minio/minio:RELEASE.2025-09-07T16-13-09Z         minio/minio:RELEASE.2025-09-07T16-13-09Z"
+)
+
+langfuse=(
+    "laci-docker-io/clickhouse/clickhouse-server:25.12-alpine        clickhouse/clickhouse-server:25.12-alpine"
+    "laci-docker-io/minio/minio:RELEASE.2025-02-28T09-55-16Z         minio/minio:RELEASE.2025-02-28T09-55-16Z"
+    "laci-docker-io/langfuse/langfuse:3.155.1                        langfuse/langfuse:3.155.1"
+    "laci-docker-io/langfuse/langfuse-worker:3.155.1                 langfuse/langfuse-worker:3.155.1"
+)
+
+litellm=(
+    "laci-ghcr-io/berriai/litellm-database:v1.82.0-stable            litellm/litellm-database:v1.82.0-stable"    "laci-ghcr-io/goauthentik/server:2023.10.6                       goauthentik/server:2023.10.6"
+)
+
+authentik=(
+    "laci-ghcr-io/goauthentik/server:2026.2.1                        goauthentik/server:2026.2.1"
+)
+
+openwebui=(
+    "laci-docker/laci/open-webui:v0.8.10                             laci/open-webui:v0.8.10"
+)
+
+onyx=(
+    "laci-docker/laci/onyx/onyx-backend:v2.0.3                       laci/onyx/onyx-backend:v2.0.3"
+    "laci-docker-io/onyxdotapp/onyx-model-server:v2.0.3              onyxdotapp/onyx-model-server:v2.0.3"
+    "laci-docker-io/onyxdotapp/onyx-web-server:v2.0.3                onyxdotapp/onyx-web-server:v2.0.3"
+    "laci-docker-io/vespaengine/vespa:8.526.15                       vespaengine/vespa:8.526.15"
+)
+
+# should work, but times out due to big layers
+vllm=(
+    "laci-docker-io/vllm/vllm-openai:v0.17.1                         laci/vllm/vllm-openai:v0.17.1"
+)
+
+# sudo docker image tag harbor.laci.l3harris.com/artifactory/laci-docker-io/vllm/vllm-openai:v0.17.1 lnsvr0310.gcsd.harris.com:8443/lacichq-docker/vllm/vllm-openai:v0.17.1
+# sudo docker image push lnsvr0310.gcsd.harris.com:8443/lacichq-docker/vllm/vllm-openai:v0.17.1
+
+
+images_list=()
+
+images_list+=("${common[@]}")
+images_list+=("${langfuse[@]}")
+images_list+=("${litellm[@]}")
+images_list+=("${authentik[@]}")
+images_list+=("${openwebui[@]}")
+images_list+=("${onyx[@]}")
+#images_list+=("${vllm[@]}")
+
+for images in "${images_list[@]}"; do
+    read -r src dst <<< "$images"
+    #echo "$src" "$dst"
+    ./skopeo-copy-to-chq.sh "$src" "$dst"
+done
+</file>
+
+<file path="laci-stack-v1.1/web/authentik/.env.example">
+#####################################################################
+## Image and Repo Settings
+#####################################################################
+
+DOCKER_IMAGE_REPO="lnsvr0310.gcsd.harris.com:8443/lacichq-docker/"
+
+AUTHENTIK_IMAGE="goauthentik/server:2026.2.1"
+POSTGRES_IMAGE="postgres:18.3-alpine"
+REDIS_IMAGE="redis:8.6.1-trixie"
+
+#####################################################################
+## Authentik Settings
+#####################################################################
+
+# openssl rand -hex 32
+AUTHENTIK_SECRET_KEY= <replace with random value>
+COMPOSE_PORT_HTTP=9000
+COMPOSE_PORT_HTTPS=9443
+
+#####################################################################
+## Database Settings
+#####################################################################
+
+# Change as needed
+PG_PASS="authentik"
+PG_USER="authentik"
+PG_DB="authentik"
+</file>
+
+<file path="laci-stack-v1.1/web/authentik/.gitignore">
+.env
+</file>
+
+<file path="laci-stack-v1.1/web/authentik/db/include.yaml">
+---
+services:
+  postgres:
+    image: ${DOCKER_IMAGE_REPO}${POSTGRES_IMAGE:-postgres:12-alpine}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 5s
+    volumes:
+      - database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${PG_PASS:-authentik}
+      POSTGRES_USER: ${PG_USER:-authentik}
+      POSTGRES_DB: ${PG_DB:-authentik}
+    networks:
+      - default
+  redis:
+    image: ${DOCKER_IMAGE_REPO}${REDIS_IMAGE:-redis:alpine}
+    command: --save 60 1 --loglevel warning
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 3s
+    volumes:
+      - redis:/data
+    networks:
+      - default
+</file>
+
+<file path="laci-stack-v1.1/web/authentik/docker-compose.yaml">
+---
+include:
+  - ./db/include.yaml
+
+services:
+  server:
+    image: ${DOCKER_IMAGE_REPO}${AUTHENTIK_IMAGE:-goauthentik/server:2023.10.6}
+    restart: unless-stopped
+    command: server
+    environment: &authentik-env
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgres
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS:-authentik}
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?error}
+    ports:
+      - "${COMPOSE_PORT_HTTP:-9080}:9000"
+      - "${COMPOSE_PORT_HTTPS:-9443}:9443"
+    volumes: &authentik-vols
+      - media:/media
+    depends_on: &authentik-depends-on
+      - postgres
+      - redis
+    networks:
+      - proxy
+      - default
+  worker:
+    image: ${DOCKER_IMAGE_REPO}${AUTHENTIK_IMAGE:-goauthentik/server:2023.10.6}
+    restart: unless-stopped
+    command: worker
+    user: root
+    environment:
+      <<: *authentik-env
+    volumes: *authentik-vols
+    depends_on: *authentik-depends-on
+    networks:
+      - default
+
+volumes:
+  database:
+  redis:
+  media:
+
+networks:
+  proxy:
+    external: true
+</file>
+
+<file path="laci-stack-v1.1/web/authentik/README.md">
+# Authentik
+
+## Bootstrapping
+
+You can access the OOBE by going to https://<hostname>:9443/if/flow/initial-setup/
+
+This can be port forwarded to your machine if needed:
+``` bash
+ssh -N -L 9443:localhost:9443 <user>@<hostname>
+```
+
+You will have to accept the self-signed cert, and then enter an email and password to use for the admin user
+</file>
+
+<file path="laci-stack-v1.1/web/onyx/.env.example">
+################################################################################
+#                                    Images                                    #
+################################################################################
+IMAGE_REPO_BASE="lnsvr0310.gcsd.harris.com:8443/lacichq-docker/"
+
+################################################################################
+#                                Onyx App Images                               #
+################################################################################
+
+ONYX_BACKEND_IMAGE="${IMAGE_REPO_BASE}laci/onyx/onyx-backend"
+ONYX_BACKEND_TAG="v2.0.3"
+
+ONYX_WEBSERVER_IMAGE="${IMAGE_REPO_BASE}onyxdotapp/onyx-web-server"
+ONYX_WEBSERVER_TAG="v2.0.3"
+
+ONYX_MODELSERVER_IMAGE="${IMAGE_REPO_BASE}onyxdotapp/onyx-model-server"
+ONYX_MODELSERVER_TAG="v2.0.3"
+
+################################################################################
+#                        Onyx Supporting Service Images                        #
+################################################################################
+
+ONYX_VESPA_IMAGE="${IMAGE_REPO_BASE}vespaengine/vespa"
+ONYX_VESPA_TAG="8.526.15"
+
+ONYX_MINIO_IMAGE="${IMAGE_REPO_BASE}minio/minio"
+ONYX_MINIO_TAG="RELEASE.2025-09-07T16-13-09Z"
+
+ONYX_NGINX_IMAGE="${IMAGE_REPO_BASE}nginx"
+ONYX_NGINX_TAG="1.23.4-alpine"
+
+################################################################################
+#                                Onyx DB Images                                #
+################################################################################
+
+ONYX_POSTGRES_IMAGE="${IMAGE_REPO_BASE}postgres"
+ONYX_POSTGRES_TAG="18.3-alpine"
+
+ONYX_REDIS_IMAGE="${IMAGE_REPO_BASE}redis"
+ONYX_REDIS_TAG="8.6.1-trixie"
+
+
+################################################################################
+#                                   Offlining                                  #
+################################################################################
+
+TIKTOKEN_CACHE_DIR=/root/.cache/tiktoken
+REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+HF_HUB_OFFLINE=true
+
+################################################################################
+#                                   Onyx app                                   #
+################################################################################
+
+# Used to generate redirects
+WEB_DOMAIN=https://onyx.laci.l3harris.com:9443/
+WEB_DOMAIN=http://localhost:19613/
+# Nginx's host-side port mapping
+HOST_PORT=19613
+
+
+AUTH_TYPE=oidc
+OAUTH_CLIENT_ID= #Authentik oauth app ID
+OAUTH_CLIENT_SECRET= # Authentik oauth app secret
+OPENID_CONFIG_URL= # Authentik oauth app ".well-know/openid-configuration" url
+
+# How long before user needs to reauthenticate, default to 7 days. (cookie expiration time)
+SESSION_EXPIRE_TIME_SECONDS=604800
+
+# Show extra/uncommon connectors
+# See https://docs.onyx.app/admin/connectors/overview for a full list of connectors
+SHOW_EXTRA_CONNECTORS=False
+
+################################################################################
+#                                   Onyx db                                    #
+################################################################################
+
+# Default values here are what Postgres uses by default, feel free to change.
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=password
+
+# Default values here for the read-only user for the knowledge graph and other future read-only purposes. 
+# Please change password!
+DB_READONLY_USER=db_readonly_user
+DB_READONLY_PASSWORD=password
+</file>
+
+<file path="laci-stack-v1.1/web/onyx/data/nginx/app.conf">
+# Log format to include request latency
+log_format custom_main '$remote_addr - $remote_user [$time_local] "$request" '
+                '$status $body_bytes_sent "$http_referer" '
+                '"$http_user_agent" "$http_x_forwarded_for" '
+                'rt=$request_time';
+
+upstream api_server {
+    # fail_timeout=0 means we always retry an upstream even if it failed
+    # to return a good HTTP response
+
+    # for UNIX domain socket setups
+    #server unix:/tmp/gunicorn.sock fail_timeout=0;
+
+    # for a TCP configuration
+    # TODO: use gunicorn to manage multiple processes
+    server api_server:8080 fail_timeout=0;
+}
+
+upstream web_server {
+    server web_server:3000 fail_timeout=0;
+}
+
+server {
+    listen 80 default_server;
+
+    client_max_body_size 5G;    # Maximum upload size
+
+    access_log /var/log/nginx/access.log custom_main;
+
+    # Match both /api/* and /openapi.json in a single rule
+    location ~ ^/(api|openapi.json)(/.*)?$ {
+        # Rewrite /api prefixed matched paths
+        rewrite ^/api(/.*)$ $1 break;
+
+        # misc headers
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header Host $host;
+
+        # need to use 1.1 to support chunked transfers
+        proxy_http_version 1.1;
+        proxy_buffering off;
+
+        # timeout settings
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
+
+        # we don't want nginx trying to do something clever with
+        # redirects, we set the Host: header above already.
+        proxy_redirect off;
+        proxy_pass http://api_server;
+    }
+
+    location / {
+        # misc headers
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header Host $host;
+
+        proxy_http_version 1.1;
+
+        # timeout settings
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
+
+        # we don't want nginx trying to do something clever with
+        # redirects, we set the Host: header above already.
+        proxy_redirect off;
+        proxy_pass http://web_server;
+    }
+
+}
+</file>
+
+<file path="laci-stack-v1.1/web/onyx/data/nginx/app.conf.template">
+# Log format to include request latency
+log_format custom_main '$remote_addr - $remote_user [$time_local] "$request" '
+                '$status $body_bytes_sent "$http_referer" '
+                '"$http_user_agent" "$http_x_forwarded_for" '
+                'rt=$request_time';
+
+upstream api_server {
+    # fail_timeout=0 means we always retry an upstream even if it failed
+    # to return a good HTTP response
+
+    # for UNIX domain socket setups
+    #server unix:/tmp/gunicorn.sock fail_timeout=0;
+
+    # for a TCP configuration
+    # TODO: use gunicorn to manage multiple processes
+    server ${ONYX_BACKEND_API_HOST}:8080 fail_timeout=0;
+}
+
+upstream web_server {
+    server ${ONYX_WEB_SERVER_HOST}:3000 fail_timeout=0;
+}
+
+server {
+    listen 80 default_server;
+
+    client_max_body_size 5G;    # Maximum upload size
+
+    access_log /var/log/nginx/access.log custom_main;
+
+    # Match both /api/* and /openapi.json in a single rule
+    location ~ ^/(api|openapi.json)(/.*)?$ {
+        # Rewrite /api prefixed matched paths
+        rewrite ^/api(/.*)$ $1 break;
+
+        # misc headers
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header Host $host;
+
+        # need to use 1.1 to support chunked transfers
+        proxy_http_version 1.1;
+        proxy_buffering off;
+
+        # timeout settings
+        proxy_connect_timeout ${NGINX_PROXY_CONNECT_TIMEOUT}s;
+        proxy_send_timeout ${NGINX_PROXY_SEND_TIMEOUT}s;
+        proxy_read_timeout ${NGINX_PROXY_READ_TIMEOUT}s;
+
+        # we don't want nginx trying to do something clever with
+        # redirects, we set the Host: header above already.
+        proxy_redirect off;
+        proxy_pass http://api_server;
+    }
+
+    location / {
+        # misc headers
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header Host $host;
+
+        proxy_http_version 1.1;
+
+        # timeout settings
+        proxy_connect_timeout ${NGINX_PROXY_CONNECT_TIMEOUT}s;
+        proxy_send_timeout ${NGINX_PROXY_SEND_TIMEOUT}s;
+        proxy_read_timeout ${NGINX_PROXY_READ_TIMEOUT}s;
+
+        # we don't want nginx trying to do something clever with
+        # redirects, we set the Host: header above already.
+        proxy_redirect off;
+        proxy_pass http://web_server;
+    }
+
+}
+</file>
+
+<file path="laci-stack-v1.1/web/onyx/data/nginx/app.conf.template.no-letsencrypt">
+# Log format to include request latency
+log_format custom_main '$remote_addr - $remote_user [$time_local] "$request" '
+                '$status $body_bytes_sent "$http_referer" '
+                '"$http_user_agent" "$http_x_forwarded_for" '
+                'rt=$request_time';
+
+# Map X-Forwarded-Proto or fallback to $scheme
+map $http_x_forwarded_proto $forwarded_proto {
+    default $http_x_forwarded_proto;
+    ""      $scheme;
+}
+
+# Map X-Forwarded-Host or fallback to $host
+map $http_x_forwarded_host $forwarded_host {
+    default $http_x_forwarded_host;
+    ""      $host;
+}
+
+# Map X-Forwarded-Port or fallback to server port
+map $http_x_forwarded_port $forwarded_port {
+    default $http_x_forwarded_port;
+    ""      $server_port;
+}
+
+upstream api_server {
+    # fail_timeout=0 means we always retry an upstream even if it failed
+    # to return a good HTTP response
+
+    # for UNIX domain socket setups
+    #server unix:/tmp/gunicorn.sock fail_timeout=0;
+
+    # for a TCP configuration
+    # TODO: use gunicorn to manage multiple processes
+    server api_server:8080 fail_timeout=0;
+}
+
+upstream web_server {
+    server web_server:3000 fail_timeout=0;
+}
+
+server {
+    listen 80 default_server;
+
+    client_max_body_size 5G;    # Maximum upload size
+
+    access_log /var/log/nginx/access.log custom_main;
+
+    # Match both /api/* and /openapi.json in a single rule
+    location ~ ^/(api|openapi.json)(/.*)?$ {
+        # Rewrite /api prefixed matched paths
+        rewrite ^/api(/.*)$ $1 break;
+
+        # misc headers
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $forwarded_proto;
+        proxy_set_header X-Forwarded-Host $forwarded_host; 
+        proxy_set_header X-Forwarded-Port $forwarded_port;
+        proxy_set_header Host $host;
+
+        # need to use 1.1 to support chunked transfers
+        proxy_http_version 1.1;
+        proxy_buffering off;
+
+        # we don't want nginx trying to do something clever with
+        # redirects, we set the Host: header above already.
+        proxy_redirect off;
+        proxy_pass http://api_server;
+    }
+
+    location / {
+        # misc headers
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $forwarded_proto;
+        proxy_set_header X-Forwarded-Host $forwarded_host; 
+        proxy_set_header X-Forwarded-Port $forwarded_port;
+        proxy_set_header Host $host;
+
+        proxy_http_version 1.1;
+
+        # we don't want nginx trying to do something clever with
+        # redirects, we set the Host: header above already.
+        proxy_redirect off;
+        proxy_pass http://web_server;
+    }
+}
+
+server {
+    listen 443 ssl default_server;
+
+    client_max_body_size 5G;    # Maximum upload size
+    
+    location / {
+        # misc headers
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        # don't use forwarded schema, host, or port here - this is the entry point
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host; 
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header Host $host;
+
+        proxy_http_version 1.1;
+        proxy_buffering off;
+        # we don't want nginx trying to do something clever with
+        # redirects, we set the Host: header above already.
+        proxy_redirect off;
+        proxy_pass http://localhost:80;
+    }
+
+    ssl_certificate /etc/nginx/sslcerts/${SSL_CERT_FILE_NAME};
+    ssl_certificate_key /etc/nginx/sslcerts/${SSL_CERT_KEY_FILE_NAME};
+}
+</file>
+
+<file path="laci-stack-v1.1/web/onyx/data/nginx/app.conf.template.prod">
+# Log format to include request latency
+log_format custom_main '$remote_addr - $remote_user [$time_local] "$request" '
+                '$status $body_bytes_sent "$http_referer" '
+                '"$http_user_agent" "$http_x_forwarded_for" '
+                'rt=$request_time';
+
+# Map X-Forwarded-Proto or fallback to $scheme
+map $http_x_forwarded_proto $forwarded_proto {
+    default $http_x_forwarded_proto;
+    ""      $scheme;
+}
+
+# Map X-Forwarded-Host or fallback to $host
+map $http_x_forwarded_host $forwarded_host {
+    default $http_x_forwarded_host;
+    ""      $host;
+}
+
+# Map X-Forwarded-Port or fallback to server port
+map $http_x_forwarded_port $forwarded_port {
+    default $http_x_forwarded_port;
+    ""      $server_port;
+}
+
+upstream api_server {
+    # fail_timeout=0 means we always retry an upstream even if it failed
+    # to return a good HTTP response
+
+    # for UNIX domain socket setups
+    #server unix:/tmp/gunicorn.sock fail_timeout=0;
+
+    # for a TCP configuration
+    # TODO: use gunicorn to manage multiple processes
+    server ${ONYX_BACKEND_API_HOST}:8080 fail_timeout=0;
+}
+
+upstream web_server {
+    server ${ONYX_WEB_SERVER_HOST}:3000 fail_timeout=0;
+}
+
+server {
+    listen 80 default_server;
+
+    client_max_body_size 5G;    # Maximum upload size
+
+    access_log /var/log/nginx/access.log custom_main;
+
+    # Match both /api/* and /openapi.json in a single rule
+    location ~ ^/(api|openapi.json)(/.*)?$ {
+        # Rewrite /api prefixed matched paths
+        rewrite ^/api(/.*)$ $1 break;
+
+        # misc headers
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $forwarded_proto;
+        proxy_set_header X-Forwarded-Host $forwarded_host;
+        proxy_set_header X-Forwarded-Port $forwarded_port;
+        proxy_set_header Host $host;
+
+        # need to use 1.1 to support chunked transfers
+        proxy_http_version 1.1;
+        proxy_buffering off;
+
+        # timeout settings
+        proxy_connect_timeout ${NGINX_PROXY_CONNECT_TIMEOUT}s;
+        proxy_send_timeout ${NGINX_PROXY_SEND_TIMEOUT}s;
+        proxy_read_timeout ${NGINX_PROXY_READ_TIMEOUT}s;
+
+        # we don't want nginx trying to do something clever with
+        # redirects, we set the Host: header above already.
+        proxy_redirect off;
+        proxy_pass http://api_server;
+    }
+
+    location / {
+        # misc headers
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $forwarded_proto;
+        proxy_set_header X-Forwarded-Host $forwarded_host;
+        proxy_set_header X-Forwarded-Port $forwarded_port;
+        proxy_set_header Host $host;
+
+        proxy_http_version 1.1;
+
+        # timeout settings
+        proxy_connect_timeout ${NGINX_PROXY_CONNECT_TIMEOUT}s;
+        proxy_send_timeout ${NGINX_PROXY_SEND_TIMEOUT}s;
+        proxy_read_timeout ${NGINX_PROXY_READ_TIMEOUT}s;
+
+        # we don't want nginx trying to do something clever with
+        # redirects, we set the Host: header above already.
+        proxy_redirect off;
+        proxy_pass http://web_server;
+    }
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+}
+
+server {
+    listen 443 ssl default_server;
+
+    client_max_body_size 5G;    # Maximum upload size
+
+    location / {
+        # misc headers
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        # don't use forwarded schema, host, or port here - this is the entry point
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header Host $host;
+
+        proxy_http_version 1.1;
+        proxy_buffering off;
+
+        # timeout settings
+        proxy_connect_timeout ${NGINX_PROXY_CONNECT_TIMEOUT}s;
+        proxy_send_timeout ${NGINX_PROXY_SEND_TIMEOUT}s;
+        proxy_read_timeout ${NGINX_PROXY_READ_TIMEOUT}s;
+
+        # we don't want nginx trying to do something clever with
+        # redirects, we set the Host: header above already.
+        proxy_redirect off;
+        proxy_pass http://localhost:80;
+    }
+
+    ssl_certificate /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+}
+</file>
+
+<file path="laci-stack-v1.1/web/onyx/data/nginx/run-nginx.sh">
+# fill in the template
+export ONYX_BACKEND_API_HOST="${ONYX_BACKEND_API_HOST:-api_server}"
+export ONYX_WEB_SERVER_HOST="${ONYX_WEB_SERVER_HOST:-web_server}"
+
+export SSL_CERT_FILE_NAME="${SSL_CERT_FILE_NAME:-ssl.crt}"
+export SSL_CERT_KEY_FILE_NAME="${SSL_CERT_KEY_FILE_NAME:-ssl.key}"
+
+# Nginx timeout settings (in seconds)
+export NGINX_PROXY_CONNECT_TIMEOUT="${NGINX_PROXY_CONNECT_TIMEOUT:-300}"
+export NGINX_PROXY_SEND_TIMEOUT="${NGINX_PROXY_SEND_TIMEOUT:-300}"
+export NGINX_PROXY_READ_TIMEOUT="${NGINX_PROXY_READ_TIMEOUT:-300}"
+
+echo "Using API server host: $ONYX_BACKEND_API_HOST"
+echo "Using web server host: $ONYX_WEB_SERVER_HOST"
+echo "Using nginx proxy timeouts - connect: ${NGINX_PROXY_CONNECT_TIMEOUT}s, send: ${NGINX_PROXY_SEND_TIMEOUT}s, read: ${NGINX_PROXY_READ_TIMEOUT}s"
+
+envsubst '$DOMAIN $SSL_CERT_FILE_NAME $SSL_CERT_KEY_FILE_NAME $ONYX_BACKEND_API_HOST $ONYX_WEB_SERVER_HOST $NGINX_PROXY_CONNECT_TIMEOUT $NGINX_PROXY_SEND_TIMEOUT $NGINX_PROXY_READ_TIMEOUT' < "/etc/nginx/conf.d/$1" > /etc/nginx/conf.d/app.conf
+
+# wait for the api_server to be ready
+echo "Waiting for API server to boot up; this may take a minute or two..."
+echo "If this takes more than ~5 minutes, check the logs of the API server container for errors with the following command:"
+echo
+echo "docker logs onyx-api_server-1"
+echo
+
+while true; do
+  # Use curl to send a request and capture the HTTP status code
+  status_code=$(curl -o /dev/null -s -w "%{http_code}\n" "http://${ONYX_BACKEND_API_HOST}:8080/health")
+  
+  # Check if the status code is 200
+  if [ "$status_code" -eq 200 ]; then
+    echo "API server responded with 200, starting nginx..."
+    break  # Exit the loop
+  else
+    echo "API server responded with $status_code, retrying in 5 seconds..."
+    sleep 5  # Sleep for 5 seconds before retrying
+  fi
+done
+
+# Start nginx and reload every 6 hours
+while :; do sleep 6h & wait; nginx -s reload; done & nginx -g "daemon off;"
+</file>
+
+<file path="laci-stack-v1.1/web/onyx/docker-compose.yaml">
+name: onyx
+include:
+  - include/db.yaml
+  - include/minio.yaml
+  - include/nginx.yaml
+  - include/vespa.yaml
+
+x-env-db: &x-env-db
+  POSTGRES_HOST: ${POSTGRES_HOST:-relational_db}
+  VESPA_HOST: ${VESPA_HOST:-index}
+  REDIS_HOST: ${REDIS_HOST:-cache}
+
+x-env-services: &x-env-services
+  MODEL_SERVER_HOST: ${MODEL_SERVER_HOST:-inference_model_server}
+  S3_ENDPOINT_URL: ${S3_ENDPOINT_URL:-http://minio:9000}
+  S3_AWS_ACCESS_KEY_ID: ${S3_AWS_ACCESS_KEY_ID:-minioadmin}
+  S3_AWS_SECRET_ACCESS_KEY: ${S3_AWS_SECRET_ACCESS_KEY:-minioadmin}
+
+x-logging-config: &x-logging-config
+  driver: json-file
+  options:
+    max-size: "50m"
+    max-file: "6"
+
+services:
+  api_server:
+    image: ${ONYX_BACKEND_IMAGE:?error}:${ONYX_BACKEND_TAG:?error}
+    command: >
+      /bin/sh -c "alembic upgrade head &&
+      echo \"Starting Onyx Api Server\" &&
+      uvicorn onyx.main:app --host 0.0.0.0 --port 8080"
+    env_file:
+      - path: .env
+        required: false
+    depends_on: &BACKEND_DEPENDS_ON
+      - relational_db
+      - index
+      - cache
+      - inference_model_server
+      - minio
+    restart: unless-stopped
+    environment:
+      <<: [*x-env-db, *x-env-services]
+      # Auth Settings
+      AUTH_TYPE: ${AUTH_TYPE:-basic}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    logging:
+      <<: *x-logging-config
+    # Optional, only for debugging purposes
+    volumes:
+      - api_server_logs:/var/log/onyx
+
+  background:
+    image: ${ONYX_BACKEND_IMAGE:?error}:${ONYX_BACKEND_TAG:?error}
+    build:
+      context: ../../backend
+      dockerfile: Dockerfile
+    command: >
+      /bin/sh -c "
+      if [ -f /etc/ssl/certs/custom-ca.crt ]; then
+        update-ca-certificates;
+      fi &&
+      /app/scripts/supervisord_entrypoint.sh"
+    env_file:
+      - path: .env
+        required: false
+    depends_on:
+      #<<: *BACKEND_DEPENDS_ON
+      - relational_db
+      - index
+      - cache
+      - inference_model_server
+      - minio
+    restart: unless-stopped
+    environment:
+      <<: [*x-env-db, *x-env-services]
+
+      USE_LIGHTWEIGHT_BACKGROUND_WORKER: ${USE_LIGHTWEIGHT_BACKGROUND_WORKER:-true}
+      MODEL_SERVER_HOST: ${MODEL_SERVER_HOST:-inference_model_server}
+      INDEXING_MODEL_SERVER_HOST: ${INDEXING_MODEL_SERVER_HOST:-indexing_model_server}
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # Optional, only for debugging purposes
+    volumes:
+      - background_logs:/var/log/onyx
+    logging:
+      <<: *x-logging-config
+
+  web_server:
+    image: ${ONYX_WEBSERVER_IMAGE:?error}:${ONYX_WEBSERVER_TAG:?error}
+    env_file:
+      - path: .env
+        required: false
+    depends_on:
+      - api_server
+    restart: unless-stopped
+    environment:
+      - INTERNAL_URL=${INTERNAL_URL:-http://api_server:8080}
+
+  inference_model_server:
+    image: ${ONYX_MODELSERVER_IMAGE:?error}:${ONYX_MODELSERVER_TAG:?error}
+    build:
+      context: ../../backend
+      dockerfile: Dockerfile.model_server
+    command: >
+      /bin/sh -c "if [ \"${DISABLE_MODEL_SERVER:-false}\" = \"True\" ]; then
+        echo 'Skipping service...';
+        exit 0;
+      else
+        exec uvicorn model_server.main:app --host 0.0.0.0 --port 9000;
+      fi"
+    env_file:
+      - path: .env
+        required: false
+    restart: unless-stopped
+    volumes:
+      # Not necessary, this is just to reduce download time during startup
+      - model_cache_huggingface:/app/.cache/huggingface/
+      # Optional, only for debugging purposes
+      - inference_model_server_logs:/var/log/onyx
+    logging:
+      <<: *x-logging-config
+
+  indexing_model_server:
+    image: ${ONYX_MODELSERVER_IMAGE:?error}:${ONYX_MODELSERVER_TAG:?error}
+    command:  >
+      /bin/sh -c "if [ \"${DISABLE_MODEL_SERVER:-false}\" = \"True\" ]; then
+        echo 'Skipping service...';
+        exit 0;
+      else
+        exec uvicorn model_server.main:app --host 0.0.0.0 --port 9000;
+      fi"
+    env_file:
+      - path: .env
+        required: false
+    restart: unless-stopped
+    environment:
+      - INDEXING_ONLY=True
+    volumes:
+      - indexing_huggingface_model_cache:/app/.cache/huggingface/
+      # Optional, only for debugging purposes
+      - indexing_model_server_logs:/var/log/onyx
+    logging:
+      <<: *x-logging-config
+
+
+
+volumes:
+  model_cache_huggingface:
+  indexing_huggingface_model_cache:
+
+  # Logs preserved across container restarts
+  api_server_logs:
+  background_logs:
+  inference_model_server_logs:
+  indexing_model_server_logs:
+</file>
+
+<file path="laci-stack-v1.1/web/onyx/include/db.yaml">
+services:
+  relational_db:
+    image: ${ONYX_POSTGRES_IMAGE:?error}:${ONYX_POSTGRES_TAG:?error}
+    shm_size: 1g
+    command: -c 'max_connections=250'
+    env_file:
+      - path: .env
+        required: false
+    restart: unless-stopped
+    # PRODUCTION: Override the defaults by passing in the environment variables
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+    # DEV: To expose ports, either:
+    # 1. Use docker-compose.dev.yml: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+    # 2. Uncomment the ports below
+    # ports:
+    #   - "5432:5432"
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+  cache:
+    image: ${ONYX_REDIS_IMAGE:?error}:${ONYX_REDIS_TAG:?error}
+    restart: unless-stopped
+    # DEV: To expose ports, either:
+    # 1. Use docker-compose.dev.yml: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+    # 2. Uncomment the ports below
+    # ports:
+    #   - "6379:6379"
+    # docker silently mounts /data even without an explicit volume mount, which enables
+    # persistence. explicitly setting save and appendonly forces ephemeral behavior.
+    command: redis-server --save "" --appendonly no
+    env_file:
+      - path: .env
+        required: false
+volumes:
+  # Necessary for persisting data for use
+  db_volume:
+</file>
+
+<file path="laci-stack-v1.1/web/onyx/include/minio.yaml">
+services:
+  minio:
+    image: ${ONYX_MINIO_IMAGE:?error}:${ONYX_MINIO_TAG:?error}
+    restart: unless-stopped
+    # DEV: To expose ports, either:
+    # 1. Use docker-compose.dev.yml: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+    # 2. Uncomment the ports below
+    # ports:
+    #   - "9004:9000"
+    #   - "9005:9001"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      # Note: we've seen the default bucket creation logic not work in some cases
+      MINIO_DEFAULT_BUCKETS: ${S3_FILE_STORE_BUCKET_NAME:-onyx-file-store-bucket}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+volumes:
+  minio_data:
+  # Caches to prevent re-downloading models, not strictly necessary
+</file>
+
+<file path="laci-stack-v1.1/web/onyx/include/nginx.yaml">
+services:
+  nginx:
+    image: ${ONYX_NGINX_IMAGE:?error}:${ONYX_NGINX_TAG:?error}
+    restart: unless-stopped
+    # nginx will immediately crash with `nginx: [emerg] host not found in upstream`
+    # if api_server / web_server are not up
+    depends_on:
+      - api_server
+      - web_server
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - DOMAIN=localhost
+      # Nginx proxy timeout settings (in seconds)
+      - NGINX_PROXY_CONNECT_TIMEOUT=${NGINX_PROXY_CONNECT_TIMEOUT:-300}
+      - NGINX_PROXY_SEND_TIMEOUT=${NGINX_PROXY_SEND_TIMEOUT:-300}
+      - NGINX_PROXY_READ_TIMEOUT=${NGINX_PROXY_READ_TIMEOUT:-300}
+    ports:
+      # - "80:80"
+      - "${HOST_PORT:-3000}:80" # allow for localhost:3000 usage, since that is the norm
+    volumes:
+      - ../data/nginx:/etc/nginx/conf.d
+    # PRODUCTION: Add SSL certificate volumes for HTTPS support:
+    #   - ../data/certbot/conf:/etc/letsencrypt
+    #   - ../data/certbot/www:/var/www/certbot
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "6"
+    # The specified script waits for the api_server to start up.
+    # Without this we've seen issues where nginx shows no error logs but
+    # does not receive any traffic
+    # NOTE: we have to use dos2unix to remove Carriage Return chars from the file
+    # in order to make this work on both Unix-like systems and windows
+    # PRODUCTION: Change to app.conf.template.prod for production nginx config
+    command: >
+      /bin/sh -c "dos2unix /etc/nginx/conf.d/run-nginx.sh 
+      && /etc/nginx/conf.d/run-nginx.sh app.conf.template"
+</file>
+
+<file path="laci-stack-v1.1/web/onyx/include/vespa.yaml">
+services: 
+  # This container name cannot have an underscore in it due to Vespa expectations of the URL
+  index:
+    image: ${ONYX_VESPA_IMAGE:?error}:${ONYX_VESPA_TAG:?error}
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - VESPA_SKIP_UPGRADE_CHECK=${VESPA_SKIP_UPGRADE_CHECK:-true}
+    # DEV: To expose ports, either:
+    # 1. Use docker-compose.dev.yml: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+    # 2. Uncomment the ports below
+    # ports:
+    #   - "19071:19071"
+    #   - "8081:8081"
+    volumes:
+      - vespa_volume:/opt/vespa/var
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "6"
+volumes:
+  vespa_volume: # Created by the container itself
+</file>
+
+<file path="laci-stack-v1.1/web/open-webui/.env.example">
+#####################################################################
+## Image and Repo Settings
+#####################################################################
+
+DOCKER_IMAGE_REPO="lnsvr0310.gcsd.harris.com:8443/lacichq-docker/"
+
+OPENWEBUI_IMAGE="laci/open-webui:v0.8.10"
+
+#####################################################################
+## Open-WebUI
+#####################################################################
+
+# openssl rand -hex 32
+WEBUI_SECRET_KEY= <replace with random value>
+OPEN_WEBUI_PORT_HTTP=3000
+
+#####################################################################
+## Disabling Unwanted Web Requests
+#####################################################################
+
+ENABLE_OLLAMA_API=False
+SCARF_NO_ANALYTICS=true
+DO_NOT_TRACK=true
+ANONYMIZED_TELEMETRY=false
+</file>
+
+<file path="laci-stack-v1.1/web/open-webui/docker-compose.yaml">
+services:
+  open-webui:
+    image: ${DOCKER_IMAGE_REPO}${OPENWEBUI_IMAGE}
+    volumes:
+      - data:/app/backend/data
+    ports:
+      - ${OPEN_WEBUI_PORT_HTTP:-3000}:8080
+    environment:
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:?error}
+    #extra_hosts:
+    #  - host.docker.internal:host-gateway
+    restart: unless-stopped
+    networks:
+      - proxy
+
+volumes:
+  data: {}
+
+networks:
+  proxy:
+    external: true
+</file>
+
+</files>
