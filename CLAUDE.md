@@ -6,14 +6,29 @@
 
 **Prefer simple manual steps over complex automation.** When a GUI or settings panel can accomplish a configuration change, suggest that first before attempting scripts, registry hacks, or workarounds. Example: Docker Desktop disk image relocation is a 3-click GUI change — multiple automated approaches (junctions, WSL export/import, registry edits) all failed because Docker Desktop overwrites them on restart.
 
+## Workflow Rules
+
+- Always research existing OSS solutions before building custom code. Ask "Is there an existing tool for this?" before implementing.
+- Before executing any plan, create documentation/plan first and wait for user approval. Do not auto-execute unless explicitly told to proceed.
+- When starting a session, read CLAUDE.md and any referenced context files before taking action. Do not begin work until project context is loaded.
+- Before pushing to any remote repo, scan all files for hardcoded passwords, API tokens, and secrets. Flag them for user review before committing.
+- After completing each phase of a multi-phase plan, include testing/validation steps before proceeding to the next phase.
+
+## Shell Usage
+
+This project runs on **Windows 11**. The PowerShell tool is available and should be preferred for Windows-native operations:
+- **Use PowerShell for**: Windows paths, registry queries, service management, environment variables, `Get-ChildItem`, `Test-Path`, `Invoke-WebRequest`, file system operations on Windows paths (`D:\`, `C:\`), and any command that benefits from PowerShell cmdlets or object-pipeline semantics.
+- **Use Bash for**: Docker commands, `git`, `curl`, WSL2 operations, and Linux-style scripting that runs inside containers or WSL.
+- **Rule of thumb**: If the command targets the Windows host, use PowerShell. If it targets a Linux container or WSL, use Bash.
+
 ## Overview
 
 **Basalt Stack** is a **fully air-gapped** multi-project repository for self-hosted AI infrastructure on Windows 11 + WSL2 with NVIDIA GPU.
 
-- **basalt-stack/** — Orchestration and inference (vLLM, LiteLLM, Langfuse)
-- **basalt-stack/tools/rmf-generator/** — RMF document automation (docxtpl + vLLM structured output)
-- **onyx/** — AI platform with RAG, deployed as-is (see `onyx/CLAUDE.md` for deploy-only reference)
-- **open-webui/** — Alternative chat interface (Svelte/Python)
+- **inference/** — vLLM, LiteLLM, Langfuse compose stacks
+- **web/** — Authentik SSO, Open-WebUI, Onyx deployment configs
+- **tools/rmf-generator/** — RMF document automation (docxtpl + vLLM structured output)
+- **builds/** — Custom image build tooling (Basalt patches on LACI base images)
 - **rmf-plan-templates/** — 20 NIST 800-53 Rev5 control family .docx templates
 - **docs/** — Plans, solutions, brainstorms, and decision records
 - **todos/** — Tracked issues with status/priority frontmatter
@@ -56,12 +71,12 @@ This stack runs on isolated networks with **no internet access at any point**:
 
 | Service | Port | Compose Location |
 |---------|------|-----------------|
-| Authentik | 443 | `basalt-stack/web/authentik/` |
-| vLLM | 8001 | `basalt-stack/inference/vllm/` |
-| LiteLLM | 8000 | `basalt-stack/inference/litellm/` |
-| Langfuse | 3001 | `basalt-stack/inference/langfuse/` |
-| Onyx | 3000 | `onyx/deployment/docker_compose/` |
-| Open-WebUI | 3002 | `basalt-stack/web/open-webui/` |
+| Authentik | 443 | `web/authentik/` |
+| vLLM | 8001 | `inference/vllm/` |
+| LiteLLM | 8000 | `inference/litellm/` |
+| Langfuse | 3001 | `inference/langfuse/` |
+| Onyx | 3000 | `web/onyx/` |
+| Open-WebUI | 3002 | `web/open-webui/` |
 
 ## Networking
 
@@ -73,26 +88,41 @@ Within a **single compose stack**, services use Docker service names directly (e
 
 ## Startup Sequence
 
+Each command assumes you are in the **repo root** (`basalt-stack-v1.0/`). Return to root between steps.
+
 ```bash
 # 1. Start vLLM (requires v0.10.2+ for gpt-oss-20b MoE support)
-cd basalt-stack/inference/vllm && docker compose up -d
+cd inference/vllm && docker compose up -d && cd -
 # Verify: curl http://localhost:8001/v1/models
 
 # 2. Start Langfuse (observability)
-cd basalt-stack/inference/langfuse && docker compose up -d
+cd inference/langfuse && docker compose up -d && cd -
 
 # 3. Start LiteLLM (LLM gateway)
-cd basalt-stack/inference/litellm && docker compose up -d
+cd inference/litellm && docker compose up -d && cd -
 
 # 4. Start Authentik (SSO portal — must be up before Onyx/Open-WebUI for OIDC)
-cd basalt-stack/web/authentik && docker compose up -d
+cd web/authentik && docker compose up -d && cd -
 # Browse: https://auth.basalt.local
 
 # 5. Start Onyx (main platform — AUTH_TYPE=oidc, uses Authentik)
-cd onyx/deployment/docker_compose && docker compose up -d
+cd web/onyx && docker compose up -d && cd -
 
 # 6. (Optional) Start Open-WebUI
-cd basalt-stack/web/open-webui && docker compose up -d
+cd web/open-webui && docker compose up -d && cd -
+```
+
+## Shutdown Sequence
+
+Reverse order of startup. From the **repo root**:
+
+```bash
+cd web/open-webui && docker compose down && cd -
+cd web/onyx && docker compose down && cd -
+cd web/authentik && docker compose down && cd -
+cd inference/litellm && docker compose down && cd -
+cd inference/langfuse && docker compose down && cd -
+cd inference/vllm && docker compose down && cd -
 ```
 
 ## Commands Quick Reference
@@ -108,7 +138,7 @@ curl -X POST http://localhost:8000/v1/chat/completions \
 
 ### RMF Generator
 ```bash
-cd basalt-stack/tools/rmf-generator
+cd tools/rmf-generator
 pip install -r requirements.txt  # pre-staged wheels only (air-gap)
 ```
 **Module structure**: `models/` (Pydantic: `control.py`, `system.py`), `loaders/`, `generators/`, `llm/` — loaders/generators/llm are stubs (TBD).
@@ -119,10 +149,10 @@ pip install -r requirements.txt  # pre-staged wheels only (air-gap)
 ## Gotchas
 
 - **ClickHouse Alpine IPv6**: Health checks fail if using `localhost` (resolves to `::1`). Use `127.0.0.1`. See `docs/solutions/clickhouse-alpine-healthcheck-fix.md`
-- **Langfuse telemetry**: Must set `TELEMETRY_ENABLED=false` for air-gap. Check `basalt-stack/inference/langfuse/.env`
+- **Langfuse telemetry**: Must set `TELEMETRY_ENABLED=false` for air-gap. Check `inference/langfuse/.env`
 - **vLLM version**: gpt-oss-20b requires **v0.10.2+** (MoE + MXFP4). See `docs/solutions/vllm-gpt-oss-20b-version-requirements.md`
 - **`gpt-4` alias**: `litellm-config.yaml` maps `gpt-4` → `gpt-oss-20b` so OpenAI-compatible clients work without reconfiguration
-- **Authentik subdomain routing**: Requires `*.basalt.local` entries in client hosts files. Template at `basalt-stack/web/authentik/hosts-template.txt`
+- **Authentik subdomain routing**: Requires `*.basalt.local` entries in client hosts files. Template at `web/authentik/hosts-template.txt`
 - **Onyx OIDC internal discovery**: Uses HTTP (`host.docker.internal:9000`) for OIDC discovery to avoid self-signed cert trust issues. Known security debt — Phase 7 will add cert trust via `custom_cert_oauth_client.patch`
 - **vLLM `--async-scheduling`**: Valid in v0.10.2 but **incompatible with structured output** (`response_format`). Must be removed when B3 (RMF structured output) lands. See GitHub issue #29379.
 - **LiteLLM reasoning model content**: LiteLLM v1.41.14 returns `content: null` for reasoning models that include `reasoning_content` in responses. Direct vLLM endpoint works correctly. Upgrade LiteLLM to fix.
@@ -134,12 +164,12 @@ pip install -r requirements.txt  # pre-staged wheels only (air-gap)
 ## Environment Configuration
 
 Key environment files:
-- `basalt-stack/inference/vllm/.env` — vLLM image tag, port, model path
-- `basalt-stack/inference/litellm/.env` — LiteLLM config and Langfuse integration
-- `basalt-stack/inference/litellm/litellm-config.yaml` — Model routing to vLLM
-- `basalt-stack/inference/langfuse/.env` — Langfuse secrets
-- `onyx/deployment/docker_compose/.env` — Onyx configuration
-- `basalt-stack/web/open-webui/.env` — Open-WebUI settings + Authentik shared-secret
-- `basalt-stack/web/authentik/.env` — Authentik secrets, ports, air-gap flags
+- `inference/vllm/.env` — vLLM image tag, port, model path
+- `inference/litellm/.env` — LiteLLM config and Langfuse integration
+- `inference/litellm/litellm-config.yaml` — Model routing to vLLM
+- `inference/langfuse/.env` — Langfuse secrets
+- `web/onyx/.env` — Onyx configuration
+- `web/open-webui/.env` — Open-WebUI settings + Authentik shared-secret
+- `web/authentik/.env` — Authentik secrets, ports, air-gap flags
 
 See `docs/plans/basalt-development-roadmap.md` for phased deployment plan.
