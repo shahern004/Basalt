@@ -312,6 +312,12 @@ Not conversation-sized — these are milestones tracked here for planning. Prior
 - **Multi-Family RMF**: Extend RMF generator to all 20 control families. Depends on B3 complete.
 - **OWASP LLMSVS L2 Audit**: Full security audit against compliance matrix. Current Track D covers ~4 of 13 LLMSVS categories — gaps in: input validation (LLM01), output handling (LLM02), supply chain (LLM05), excessive agency (LLM08). See `docs/plans/basalt-compliance-matrix.md`.
 
+### LACI v1.1 Alignment (Deferred)
+
+- [ ] **D2: Networking model migration** — Migrate from `host.docker.internal` (host-routed) to LACI's shared Docker network model (`proxy` and `inference` external networks). Touches every compose file. Requires: `docker network create proxy inference`, update all compose files to join external networks, remove `extra_hosts` entries, test cross-stack communication.
+- [ ] **D4: Two-part image reference pattern** — Adopt LACI's `${DOCKER_IMAGE_REPO}${IMAGE}` pattern across all `.env` and compose files. Enables single-variable registry swapping between dev, Forgejo, and air-gap.
+- [ ] **Version alignment** — Upgrade to LACI v1.1 component versions: vLLM v0.17.1, LiteLLM v1.82.0, Langfuse v3.155.1, Postgres 18.3-alpine, Redis 8.6.1-trixie. Test each upgrade individually.
+
 ---
 
 ## Effort Dependency Graph
