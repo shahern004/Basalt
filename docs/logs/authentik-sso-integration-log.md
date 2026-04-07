@@ -34,14 +34,14 @@ related:
 
 | Task | File(s) | Notes |
 |------|---------|-------|
-| 1.1 Rewrite docker-compose.yaml | `basalt-stack/web/authentik/docker-compose.yaml` | Full rewrite: removed proxy network, added extra_hosts, shm_size, python3 urllib health checks, log rotation anchor, memory limits, depends_on with service_healthy |
-| 1.2 Upgrade db/include.yaml | `basalt-stack/web/authentik/db/include.yaml` | Postgres 12→16-alpine, Redis pinned to 7.4-alpine, added --requirepass, removed hardcoded PG_PASS default, added memory limits + log rotation |
-| 1.3 Create .env.example + .env | `basalt-stack/web/authentik/.env.example`, `.env` | Banner format matching other services, generated secrets via openssl rand -hex 32 |
-| 1.4 Create TLS cert script | `basalt-stack/web/authentik/scripts/gen-cert.sh` | Wildcard SAN: *.basalt.local + basalt.local + host.docker.internal + localhost + 127.0.0.1, RSA 4096, 10yr |
-| 1.5 Create blueprint | `basalt-stack/web/authentik/blueprints/custom/00-system-settings.yaml` | Minimal: brand title only. Avatar via env var. All else via admin UI (YAGNI). |
-| 1.6 Create stage-images.sh | `basalt-stack/web/authentik/scripts/stage-images.sh` | 4 subcommands: pull/save/load/verify. 3 images: server:2026.2.1, postgres:16-alpine, redis:7.4-alpine |
-| 1.7 Create hosts template | `basalt-stack/web/authentik/hosts-template.txt` | 4 subdomains: auth, webui, onyx, rmf |
-| 1.8 Updated .gitignore | `basalt-stack/web/authentik/.gitignore` | Excludes .env, certs/, images/, data/*, custom-templates/* |
+| 1.1 Rewrite docker-compose.yaml | `web/authentik/docker-compose.yaml` | Full rewrite: removed proxy network, added extra_hosts, shm_size, python3 urllib health checks, log rotation anchor, memory limits, depends_on with service_healthy |
+| 1.2 Upgrade db/include.yaml | `web/authentik/db/include.yaml` | Postgres 12→16-alpine, Redis pinned to 7.4-alpine, added --requirepass, removed hardcoded PG_PASS default, added memory limits + log rotation |
+| 1.3 Create .env.example + .env | `web/authentik/.env.example`, `.env` | Banner format matching other services, generated secrets via openssl rand -hex 32 |
+| 1.4 Create TLS cert script | `web/authentik/scripts/gen-cert.sh` | Wildcard SAN: *.basalt.local + basalt.local + host.docker.internal + localhost + 127.0.0.1, RSA 4096, 10yr |
+| 1.5 Create blueprint | `web/authentik/blueprints/custom/00-system-settings.yaml` | Minimal: brand title only. Avatar via env var. All else via admin UI (YAGNI). |
+| 1.6 Create stage-images.sh | `web/authentik/scripts/stage-images.sh` | 4 subcommands: pull/save/load/verify. 3 images: server:2026.2.1, postgres:16-alpine, redis:7.4-alpine |
+| 1.7 Create hosts template | `web/authentik/hosts-template.txt` | 4 subdomains: auth, webui, onyx, rmf |
+| 1.8 Updated .gitignore | `web/authentik/.gitignore` | Excludes .env, certs/, images/, data/*, custom-templates/* |
 
 ### Decisions Made
 
@@ -68,14 +68,14 @@ These require Docker running and are documented for execution during deployment:
 - [ ] Assign cert to brand in Admin UI (System > Brands > web certificate)
 - [ ] Set `authentik_host_insecure: true` on embedded outpost config
 - [ ] Configure enrollment flow in admin UI: Prompt → UserWrite (create_users_as_inactive: true) → Deny
-- [ ] Stop nginx portal: `cd basalt-stack/web/portal && docker compose down`
+- [x] ~~Stop nginx portal~~ (obsolete — portal was archived in Phase 3, see line for `3.7a Archive portal`)
 - [ ] Test subdomain routing: configure test proxy provider for webui.basalt.local → http://host.docker.internal:3002
 - [ ] Verify WebSocket passthrough (Open-WebUI chat streaming)
 
 ### File Tree After Phase 1
 
 ```
-basalt-stack/web/authentik/
+web/authentik/
 ├── .env                          # Generated secrets (gitignored)
 ├── .env.example                  # Template for new installs
 ├── .gitignore                    # Excludes .env, certs/, images/
@@ -106,10 +106,10 @@ basalt-stack/web/authentik/
 | Task | File(s) | Notes |
 |------|---------|-------|
 | 2.0 Evaluate WEBUI_AUTH_TRUSTED_EMAIL_HEADER | (research) | NOT available in this fork. Upstream feature not backported. Proceeding with hardened laci_ fork code. |
-| 2.4 Harden auth code (S1 + S3) | `open-webui/backend/apps/web/routers/auths.py` | S1: `secrets.token_urlsafe(32)` replaces email-as-password in signup. S3: `_validate_authentik_secret()` helper with `hmac.compare_digest` on both /signin and /signup. Null-check for X-Authentik-Email header. Signin now uses `Users.get_user_by_email()` (no password check — trust comes from shared-secret gate). |
-| 2.4b Fix JWT secret (S2) | `open-webui/backend/config.py` | Removed `t0p-s3cr3t` fallback. Empty string default + `not WEBUI_SECRET_KEY` check = fail-fast at startup. |
-| 2.5 Update .env + compose | `basalt-stack/web/open-webui/.env`, `docker-compose.yaml` | Added ENABLE_SIGNUP, DEFAULT_USER_ROLE=user, JWT_EXPIRES_IN=24h, AUTHENTIK_SHARED_SECRET. Compose passes all 4 new env vars. |
-| 2.5b Fix JWT_EXPIRES_IN config | `open-webui/backend/config.py`, `apps/web/main.py` | Was hardcoded to "-1" (never). Now reads from `JWT_EXPIRES_IN` env var (default "-1" for backwards compat, overridden to "24h" in .env). |
+| 2.4 Harden auth code (S1 + S3) | `builds/open-webui/patches/001-authentik-sso-v0.1.113.patch` (touches `backend/apps/web/routers/auths.py`) | S1: `secrets.token_urlsafe(32)` replaces email-as-password in signup. S3: `_validate_authentik_secret()` helper with `hmac.compare_digest` on both /signin and /signup. Null-check for X-Authentik-Email header. Signin now uses `Users.get_user_by_email()` (no password check — trust comes from shared-secret gate). |
+| 2.4b Fix JWT secret (S2) | `builds/open-webui/patches/001-authentik-sso-v0.1.113.patch` (touches `backend/config.py`) | Removed `t0p-s3cr3t` fallback. Empty string default + `not WEBUI_SECRET_KEY` check = fail-fast at startup. |
+| 2.5 Update .env + compose | `web/open-webui/.env`, `docker-compose.yaml` | Added ENABLE_SIGNUP, DEFAULT_USER_ROLE=user, JWT_EXPIRES_IN=24h, AUTHENTIK_SHARED_SECRET. Compose passes all 4 new env vars. |
+| 2.5b Fix JWT_EXPIRES_IN config | `builds/open-webui/patches/001-authentik-sso-v0.1.113.patch` (touches `backend/config.py`, `apps/web/main.py`) | Was hardcoded to "-1" (never). Now reads from `JWT_EXPIRES_IN` env var (default "-1" for backwards compat, overridden to "24h" in .env). |
 
 ### Decisions Made
 
@@ -145,8 +145,8 @@ basalt-stack/web/authentik/
 | Task | File(s) | Notes |
 |------|---------|-------|
 | 3.3 TLS trust decision | (research) | Chose HTTP for internal OIDC discovery (`host.docker.internal:9000`). Avoids self-signed cert trust issue. `custom_cert_oauth_client.patch` deferred to Phase 7. |
-| 3.4 Update Onyx .env | `onyx/deployment/docker_compose/.env` | Backed up as `.env.pre-authentik`. Set AUTH_TYPE=oidc, added OAUTH_CLIENT_ID/SECRET (placeholders), OPENID_CONFIG_URL (HTTP internal), WEB_DOMAIN=https://onyx.basalt.local |
-| 3.7a Archive portal | `basalt-stack/web/portal` → `basalt-stack/web/portal-archived` | Used `git mv` to preserve history |
+| 3.4 Update Onyx .env | `web/onyx/.env` | Backed up as `web/onyx/.env.pre-authentik`. Set AUTH_TYPE=oidc, added OAUTH_CLIENT_ID/SECRET (placeholders), OPENID_CONFIG_URL (HTTP internal), WEB_DOMAIN=https://onyx.basalt.local |
+| 3.7a Archive portal | `web/portal` → `web/portal-archived` | Used `git mv` to preserve history |
 | 3.7b Update CLAUDE.md | `CLAUDE.md` | New architecture diagram (Authentik-centric), updated port table, startup sequence (Authentik before Onyx/Open-WebUI), env config section, added Authentik gotchas |
 | 3.7c Update system design | `docs/basalt-system-design.md` | Architecture diagram, service inventory (Authentik replaces Portal, 25 containers), startup order, telemetry table, development status |
 | 3.7d Update roadmap | `docs/plans/basalt-development-roadmap.md` | Track D: Authentik SSO marked DONE, running infra table updated |
@@ -170,7 +170,7 @@ basalt-stack/web/authentik/
 - [ ] 3.2 Create Authentik Proxy Provider (admin UI): name `onyx-proxy`, external `https://onyx.basalt.local`, internal `http://host.docker.internal:3000`, bind to embedded outpost, authorization flow `default-provider-authorization-implicit-consent`
 - [ ] 3.2b Create Application: name "Onyx", slug `onyx`, group "AI Services", bind both providers
 - [ ] 3.4b Replace `<from-authentik-provider>` placeholders in Onyx .env with actual client ID/secret from step 3.1
-- [ ] 3.5 Restart Onyx: `cd onyx/deployment/docker_compose && docker compose down && docker compose up -d`
+- [ ] 3.5 Restart Onyx: `cd web/onyx && docker compose down && docker compose up -d`
 - [ ] 3.6 Add `onyx.basalt.local` to hosts file (already in hosts-template.txt)
 - [ ] Test: browse to `https://onyx.basalt.local` → Authentik login → OIDC callback → authenticated Onyx session
 - [ ] Test: cross-app SSO — already logged in via Open-WebUI → click Onyx tile → no re-login
