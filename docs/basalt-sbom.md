@@ -29,7 +29,7 @@ related:
 | **SBOM Scope**           | Container images, application dependencies                   |
 | **Applicable Standards** | NIST SP 800-218 (SSDF), EO 14028, NTIA SBOM Minimum Elements |
 | **Repository**           | basalt-stack-v1.0 (multi-project, air-gapped deployment)     |
-| **Target Environment**   | Windows 11 + WSL2, NVIDIA RTX A6000, fully air-gapped        |
+| **Target Environment**   | Windows 11 + WSL2, fully air-gapped. Dev: NVIDIA RTX A4000 (20 GB VRAM, current). Prod target: NVIDIA RTX A6000 (48 GB VRAM, procurement pending). |
 
 > **Air-Gap Declaration:** All components listed below are pre-staged before deployment. No runtime downloads, CDN fetches, or telemetry transmissions occur. See [Telemetry Suppression](#telemetry-suppression) for enforced settings.
 

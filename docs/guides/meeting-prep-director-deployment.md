@@ -175,9 +175,9 @@ The RMF Generator would most likely use **Pattern 1** (forward-auth proxy) since
 - Scaling is a configuration change, not a rewrite.
 
 **"What GPU do we need?"**
-- Current target: NVIDIA RTX A6000 (48 GB VRAM).
-- GPT-OSS:20B at MXFP4 quantization uses ~16 GB VRAM, leaving ~32 GB for KV cache.
-- Minimum viable: any NVIDIA GPU with 24+ GB VRAM (RTX 4090, A5000, etc.).
+- **Dev box (on the bench today)**: NVIDIA RTX A4000 (20 GB VRAM). Forces 4-bit quantization, `--max-num-seqs 2`, and `--max-model-len 8192`. Single-stream development only.
+- **Prod target (procurement pending)**: NVIDIA RTX A6000 (48 GB VRAM). GPT-OSS:20B at MXFP4 quantization uses ~16 GB VRAM, leaving ~32 GB for KV cache and concurrent requests.
+- Minimum viable for a *production* deployment: any NVIDIA GPU with 24+ GB VRAM (RTX 4090, A5000, etc.). The A4000 dev box is below that bar — sufficient for feature work, not for the director demo.
 - The 120B model variant would require multi-GPU (not in scope for MVP).
 
 ### Security & Compliance
@@ -269,7 +269,8 @@ If the director wants to see documentation:
 BASALT STACK — Self-Hosted AI Infrastructure
 ─────────────────────────────────────────────
 WHAT:  GPT-OSS:20B LLM on air-gapped network with SSO portal
-WHERE: Single host, NVIDIA A6000 GPU, Windows 11 + WSL2
+WHERE: Single host, Windows 11 + WSL2
+       Dev: NVIDIA A4000 20GB (current) | Prod target: NVIDIA A6000 48GB (pending)
 HOW:   6 Docker Compose stacks, ~25 containers, all open-source
 
         Browser → Authentik SSO (*.basalt.local)

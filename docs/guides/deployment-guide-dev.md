@@ -71,7 +71,8 @@ Timeline (approximate):
 
 | Component | Requirement |
 |-----------|-------------|
-| GPU | NVIDIA RTX A6000 (48 GB VRAM) or equivalent |
+| GPU (dev, current) | NVIDIA RTX A4000 (20 GB VRAM) — forces 4-bit quantization, tight KV cache, `--max-num-seqs 2` |
+| GPU (prod target) | NVIDIA RTX A6000 (48 GB VRAM) or equivalent — procurement pending as of 2026-04-09 |
 | RAM | 32 GB minimum (64 GB recommended for ~25 containers) |
 | Disk | 100 GB free (model weights ~40 GB + Docker images ~50 GB) |
 | OS | Windows 11 Pro with WSL2 |
@@ -81,7 +82,7 @@ Timeline (approximate):
 | Software | Version | Check Command |
 |----------|---------|---------------|
 | Docker Desktop | Latest with WSL2 backend | `docker compose version` |
-| NVIDIA Container Toolkit | Latest | `nvidia-smi` (should show A6000) |
+| NVIDIA Container Toolkit | Latest | `nvidia-smi` (dev box: should show A4000; prod target: A6000) |
 | WSL2 | Ubuntu or Debian distro | `wsl --list --verbose` |
 | Git | Any | `git --version` |
 | OpenSSL | Any (for cert generation) | `openssl version` |
@@ -159,7 +160,7 @@ ls web/onyx/docker-compose.yaml
 > **Shell compatibility note:** Docker Desktop on Windows exposes the same `docker` / `docker compose` CLI to both PowerShell and WSL2 bash, but historically we've hit intermittent WSL2-side bind-mount and signal-forwarding issues when driving Docker Desktop from inside WSL2. **Use PowerShell for the deployment workflow.** Drop into WSL2 only for tasks that genuinely require Linux tooling (e.g., `huggingface-cli download` in §1, if you prefer it there).
 
 - [ ] Docker running with GPU support
-- [ ] `nvidia-smi` shows RTX A6000
+- [ ] `nvidia-smi` shows an RTX card matching your target (A4000 on dev bench, A6000 on prod target when available)
 - [ ] Hosts file updated with `*.basalt.local` entries
 - [ ] Repository present with all compose files
 
@@ -241,7 +242,8 @@ Start vLLM **first** — model loading takes 5-10 minutes. You'll do other work 
 | Image | `vllm/vllm-openai:v0.10.2` | `.env` |
 | Port | `8001` (host) → `8000` (container) | `.env` |
 | Model | `openai/gpt-oss-20b` | `docker-compose.yaml` command |
-| GPU memory | 85% of 48 GB = 40.8 GB | compose command |
+| GPU memory (dev / A4000 20 GB) | 90% of 20 GB = 18 GB | compose command — tight, requires 4-bit quant + `--max-num-seqs 2` |
+| GPU memory (prod / A6000 48 GB) | 85% of 48 GB = 40.8 GB | compose command — generous |
 | Max sequence length | 4096 tokens | compose command |
 | Health check start period | 600s (10 minutes) | compose healthcheck |
 
@@ -519,12 +521,28 @@ On first start, the worker also applies the `00-system-settings.yaml` blueprint,
 After logging in to the Authentik admin interface:
 
 **Assign the TLS certificate to the brand:**
-1. Navigate to **System > Certificates**
-2. Verify the `basalt.local` certificate was auto-imported. The worker mounts `./certs:/certs` and runs a periodic discovery sweep — if the cert isn't visible immediately, wait ~30s and refresh, or restart the worker: `docker compose restart worker`
-3. Navigate to **System > Brands**
-4. Edit the default brand (`authentik-default`) — note that **Branding title** is already set to "Basalt Stack" by the `00-system-settings.yaml` blueprint, so you only need to assign the cert
-5. Set **Web certificate** to `basalt.local`
-6. Save
+
+1. Navigate to **System > Certificates**. You should see a `basalt.local` entry auto-imported by the worker's cert-discovery sweep (which mounts `./certs:/certs` and scans periodically). If it isn't visible within ~30s, wait a moment and refresh, or restart the worker: `docker compose -f web/authentik/docker-compose.yaml restart worker`.
+
+2. **Attach the private key to the imported cert.** This step is easy to miss: Authentik's auto-discovery imports `basalt.local.pem` as a **cert-only** entry because our gen-cert script emits the key as `basalt.local-key.pem`, a filename Authentik doesn't pair automatically. Without a private key attached, the cert won't appear in the **Web certificate** dropdown in the next step (that dropdown filters to entries that can actually terminate TLS, i.e. ones with a usable private key).
+
+   To fix it:
+   - Click the `basalt.local` entry in **System > Certificates** to open it
+   - You'll see the certificate body populated but the **Private Key** field empty
+   - Open `web/authentik/certs/basalt.local-key.pem` on the host, copy the entire contents (including the `-----BEGIN PRIVATE KEY-----` / `-----END PRIVATE KEY-----` markers), and paste into the **Private Key** field
+   - Save
+
+   After save, the entry should show both cert and key present. If you navigate away and back, the cert's status indicator should now reflect that it has a paired key.
+
+3. Navigate to **System > Brands**.
+
+4. Edit the default brand (`authentik-default`) — **Branding title** is already set to "Basalt Stack" by the `00-system-settings.yaml` blueprint, so you only need to assign the cert here.
+
+5. Set **Web certificate** to `basalt.local`. If it doesn't appear in the dropdown, go back to step 2 — the private key didn't attach successfully.
+
+6. Save.
+
+> **Why the manual key-paste step exists:** Authentik's cert-discovery pairs files by basename convention — it expects either `<name>.pem` + `<name>.key` as a pair, or a single `<name>.pem` containing both cert and key concatenated. Our gen-cert scripts (`gen-cert.ps1` / `gen-cert.sh`) emit the OpenSSL-idiomatic `<name>-key.pem` which discovery leaves unpaired. A cleaner fix at the script level — renaming the key output to `basalt.local.key`, or concatenating — is tracked as a follow-up; for now the manual paste is a one-time step per cert rotation.
 
 **Configure the embedded outpost for self-signed TLS:**
 1. Navigate to **Outposts > authentik Embedded Outpost**
@@ -903,7 +921,7 @@ Basalt dev runs on Windows with PowerShell as the primary shell, driving Docker 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
 | Container exits immediately with scheduling error | `--async-scheduling` flag issue (only on older vLLM builds; v0.10.2 supports it but conflicts with structured output — see §2) | Remove the flag from the compose `command:` section |
-| `torch.cuda.OutOfMemoryError` | Model + KV cache exceed 48 GB | Lower `gpu-memory-utilization` to `0.80` or reduce `max-model-len` to `2048` |
+| `torch.cuda.OutOfMemoryError` | Model + KV cache exceed available VRAM (20 GB on A4000 dev box, 48 GB on A6000 prod target) | **A4000 dev**: drop to a 4-bit quant, set `--max-model-len 8192`, `--max-num-seqs 2`, `--gpu-memory-utilization 0.90`. **A6000 prod**: lower `--gpu-memory-utilization` to `0.80` or reduce `max-model-len` to `2048`. |
 | Model not found | `MODEL_PATH` points to wrong parent directory, or the bind mount didn't land | `docker compose -f inference/vllm/docker-compose.yaml exec vllm ls /models/gpt-oss-20b` — should list `config.json` and `*.safetensors`. If empty, the host-side path in `.env` is wrong. |
 | Health check never passes | Model still loading (normal for first 5-10 min, and an extra 2–5 min on top if using the `D:/BASALT/models` 9p path) | Wait for `start_period` (600s). Check logs: `docker compose -f inference/vllm/docker-compose.yaml logs -f vllm` |
 | First-load appears slow (several minutes before "Loading model weights...") | Weights served from Windows NTFS via the WSL2 9p bridge (`D:/BASALT/models`) | Expected and accepted trade-off per §1. Only relevant at cold start — post-load inference is GPU-bound. If it bothers you, move weights to a WSL2 native path (e.g., `/home/$USER/models/gpt-oss-20b`) and update `MODEL_PATH`. |
@@ -931,6 +949,7 @@ Basalt dev runs on Windows with PowerShell as the primary shell, driving Docker 
 |---------|-------|-----|
 | Login page won't load | Port 443 conflict (old portal?) | `docker ps` to find what's using port 443. Stop the old portal. |
 | Login page loads but cert is wrong | Certificate not assigned to brand | Admin UI > System > Brands > set Web certificate to `basalt.local` |
+| `basalt.local` visible in System > Certificates but **missing from the Web certificate dropdown** in System > Brands | Cert was auto-discovered standalone because Authentik's discovery doesn't pair `basalt.local.pem` with our `basalt.local-key.pem` filename. Dropdowns for server TLS filter out cert-only entries. | Open the `basalt.local` entry in System > Certificates, paste the contents of `web/authentik/certs/basalt.local-key.pem` into the Private Key field, save. The cert will then appear in the Web certificate dropdown. See §5e. |
 | Subdomain doesn't route | Provider not bound to outpost | Outposts > authentik Embedded Outpost > verify application is selected |
 | `502 Bad Gateway` on subdomain | Backend service not running | Start the backend service. Verify `host.docker.internal` resolves from Authentik container. |
 | Workers unhealthy | Insufficient memory | Check `docker stats`. Worker needs up to 1 GB. |

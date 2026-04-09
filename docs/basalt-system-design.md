@@ -25,7 +25,7 @@ related:
 **Version:** 1.0
 **Date:** 2026-03-13
 **Classification:** Unclassified // FOUO
-**Environment:** Air-gapped Windows 11 + WSL2, NVIDIA RTX A6000 (48 GB VRAM)
+**Environment:** Air-gapped Windows 11 + WSL2. **Dev hardware (current, 2026-04-09):** NVIDIA RTX A4000 (20 GB VRAM). **Prod target hardware:** NVIDIA RTX A6000 (48 GB VRAM) — procurement pending.
 
 ---
 
@@ -104,10 +104,13 @@ Basalt runs as **six independent Docker Compose stacks** on a single host. Inter
 
 | Parameter | Value |
 |-----------|-------|
-| GPU | NVIDIA RTX A6000 (48 GB VRAM) |
+| GPU (dev, current) | NVIDIA RTX A4000 (20 GB VRAM) |
+| GPU (prod target) | NVIDIA RTX A6000 (48 GB VRAM) — procurement pending |
 | Allocation | 1× GPU exclusively to vLLM container |
-| `gpu_memory_utilization` | 0.85 (40.8 GB usable) |
-| `max_model_len` | 4096 tokens (may increase to 8192 for RMF) |
+| `gpu_memory_utilization` (dev / A4000) | 0.90 (18 GB usable) — tight; requires 4-bit quantization and `--max-num-seqs 2` |
+| `gpu_memory_utilization` (prod / A6000) | 0.85 (40.8 GB usable) — generous |
+| `max_model_len` (dev) | 8192 tokens — cap set by A4000 KV cache headroom |
+| `max_model_len` (prod) | 4096 tokens default, 8192 for RMF |
 | `tensor_parallel_size` | 1 (single GPU) |
 | IPC mode | `host` (required for CUDA shared memory) |
 
