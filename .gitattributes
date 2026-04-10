@@ -1,0 +1,5 @@
+# Force LF line endings for shell scripts (run in WSL2/Linux, not Windows)
+*.sh eol=lf
+
+# PowerShell scripts stay platform-default (CRLF on Windows is fine)
+*.ps1 text
