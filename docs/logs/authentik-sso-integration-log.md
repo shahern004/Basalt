@@ -174,7 +174,44 @@ web/authentik/
 - [ ] 3.6 Add `onyx.basalt.local` to hosts file (already in hosts-template.txt)
 - [ ] Test: browse to `https://onyx.basalt.local` → Authentik login → OIDC callback → authenticated Onyx session
 - [ ] Test: cross-app SSO — already logged in via Open-WebUI → click Onyx tile → no re-login
-- [ ] Test: `OPENID_CONFIG_URL` resolves from Onyx container: `docker exec onyx-api_server-1 curl http://host.docker.internal:9000/application/o/onyx/.well-known/openid-configuration`
+- [ ] Test: `OPENID_CONFIG_URL` resolves from Onyx container: `docker compose -f web/onyx/docker-compose.yaml exec api_server curl http://host.docker.internal:9000/application/o/onyx/.well-known/openid-configuration`
+
+---
+
+## Phase 4 — Live Deployment Walkthrough (2026-04-07, in progress)
+
+Resuming the deployment cold against the refreshed `docs/guides/deployment-guide-dev.md` (commits `9add21e`, `b64a975`). Discoveries below feed back into a guide patch in the working tree (uncommitted at end of session).
+
+**§5e cert assignment:**
+- ✅ Authentik containers up, brand title "Basalt Stack" loaded from blueprint, admin login working
+- ⚠ **Cert auto-discovery imports `basalt.local.pem` standalone.** Authentik's pairing convention doesn't match our gen-cert filename `basalt.local-key.pem`, so the cert appears in System > Certificates as cert-only (no private key) and is missing from the Web certificate dropdown in System > Brands.
+- **Workaround applied:** opened the cert entry in System > Certificates, pasted contents of `web/authentik/certs/basalt.local-key.pem` into the Private Key field, saved. After that, `basalt.local` appeared in the brand's Web certificate dropdown and was assigned successfully.
+- **Guide patch (uncommitted):** §5e walkthrough rewritten with the manual paste step + Appendix A row added for searchability.
+- **Permanent fix (deferred):** rename gen-cert key output to `basalt.local.key` OR concatenate cert+key into a single `.pem`. Needs verification against fresh Authentik volume; tracked for follow-up.
+
+**§5f enrollment flow — three guide bugs found:**
+1. Guide says "Add stages to the flow (in order)" inside the flow create dialog. **Wrong** — Authentik's "Update Flow" dialog only sets metadata. Stages live as separate top-level objects under Flows & Stages > Stages and are bound to flows via the Stage Bindings tab on the flow's *detail page*, not the edit modal.
+2. Guide says "Set Enrollment flow on the brand" in System > Brands. **Wrong** — the brand model has no `flow_enrollment` slot. Enrollment is wired via the `default-authentication-identification` stage's "Enrollment flow" field (Flows & Stages > Stages > edit identification stage). Once set, the login page shows a "Sign up" link.
+3. Path B prompt list mentioned only Name + Username + Email. **Incomplete** — submitting that triggers a 3-error triplet (`'AnonymousUser' object has no attribute 'group_attributes'`, `Password not set in context`, `'flow_plan'`). Root cause is the User Write Stage trying to read `password` from `context.prompt_data` and failing; the other two errors cascade from the post-failure error renderer.
+
+**§5f current state at session end:**
+- Flow `enrollment-approval` exists with metadata
+- Three prompts created (`enroll-username`, `enroll-email`, `enroll-name`)
+- One Prompt Stage created and bound; User Write Stage created and bound; Deny Stage created and bound
+- Identification stage's Enrollment flow field set to `enrollment-approval` — "Request Account" link appears on login page
+- ❌ Submitting the form throws the error triplet
+
+**Resume here next session — fix walkthrough:**
+1. Create `enroll-password` prompt: Field Key = `password` (exact), Type = Password, Required ✓
+2. Create `enroll-password-repeat` prompt: Field Key = `password_repeat` (exact), Type = Password, Required ✓
+3. Edit `enrollment-prompt-stage` and add both new prompts to the Fields multi-select
+4. Re-test in fresh incognito → should land on the deny-stage "pending approval" message
+5. If errors 1 or 3 persist: check Policy Bindings on the flow and prompt stage for any expression policy referencing `request.user.group_attributes` (likely a leftover from default flow templates that assume authenticated context)
+
+**§0 hosts file finding (also a guide bug):**
+- The hosts file step is presented as standard prose ("Edit `C:\Windows\...\hosts` as Administrator") with an *optional* `ping` verify step. User skipped the verify and didn't realize Notepad-not-as-admin saves silently fail. Symptom: `https://auth.basalt.local` unreachable, only `https://localhost` works. Diagnosed via `Get-Content C:\Windows\System32\drivers\etc\hosts | Select-String basalt` returning empty.
+- **Fix applied during session:** `Start-Process notepad -Verb RunAs -ArgumentList 'C:\Windows\System32\drivers\etc\hosts'` → paste 5 lines → save → `ipconfig /flushdns` → `chrome://net-internals/#dns` clear host cache.
+- **Guide patch (uncommitted):** make verify step non-optional, provide explicit elevated-Notepad command, document Chrome Secure DNS bypass gotcha.
 
 ---
 
