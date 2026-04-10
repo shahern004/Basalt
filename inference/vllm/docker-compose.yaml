@@ -4,10 +4,8 @@ services:
     restart: unless-stopped
     # ipc: host required for NVIDIA GPU shared memory (NCCL)
     ipc: host
-    ports:
-      - "${VLLM_PORT:-8001}:8000"
     volumes:
-      - ${MODEL_PATH:-./models}:/models
+      - ${MODEL_PATH:-/opt/basalt/models}:/models
       - vllm-hf-cache:/root/.cache/huggingface
     environment:
       - VLLM_NO_USAGE_STATS=1
@@ -22,18 +20,18 @@ services:
               count: 1
               capabilities: [gpu]
     command: >
-      --model /models/gpt-oss-20b
-      --served-model-name gpt-oss-20b
+      --model /models/gemma-4-26B-A4B-it-AWQ-4bit
+      --served-model-name gemma-4-26B-A4B-it
       --host 0.0.0.0
       --port 8000
-      --gpu-memory-utilization 0.85
+      --quantization awq
+      --gpu-memory-utilization 0.90
       --max-model-len 8192
-      --max-num-seqs 64
+      --max-num-seqs 2
       --tensor-parallel-size 1
-      --async-scheduling
+      --limit-mm-per-prompt image=0,audio=0
     healthcheck:
-      # /v1/models returns model list when ready; /health is liveness-only
-      test: ["CMD-SHELL", "curl -sf http://localhost:8000/v1/models | grep -q gpt-oss-20b || exit 1"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/v1/models | grep -q gemma-4-26B-A4B-it || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -43,6 +41,12 @@ services:
       options:
         max-size: "50m"
         max-file: "6"
+    networks:
+      - proxy
 
 volumes:
   vllm-hf-cache:
+
+networks:
+  proxy:
+    external: true
