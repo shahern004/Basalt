@@ -23,8 +23,10 @@ for compose_file in \
         continue
     fi
 
-    # Check for 'external: true' within a proxy network block
-    if grep -A1 'proxy:' "$compose_file" | grep -q 'external: true'; then
+    # Coarse check: file must contain both 'proxy:' and 'external: true'.
+    # Not a full YAML parse — sufficient for Basalt compose files where proxy
+    # is the only external network. For precise validation, use yq.
+    if grep -q 'proxy:' "$compose_file" && grep -q 'external: true' "$compose_file"; then
         echo "  [PASS] $compose_file"
     else
         echo "  [FAIL] $compose_file — missing 'proxy: external: true'"

@@ -34,5 +34,5 @@ check that stack's compose file for the `external: true` declaration.
 The `proxy` network must exist before any stack starts:
 
 ```bash
-docker network create proxy
+docker network create proxy 2>/dev/null || true
 ```
