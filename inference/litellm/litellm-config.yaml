@@ -1,19 +1,19 @@
 model_list:
-  - model_name: gpt-oss-20b
+  - model_name: gemma-4-26B-A4B-it
     litellm_params:
       # openai/ prefix for OpenAI-compatible vLLM endpoint
       # Note: hosted_vllm/ prefix requires LiteLLM >= v1.50; pinned at v1.41.14
-      # response_format passthrough works with openai/ since it's a standard param
-      model: openai/gpt-oss-20b
-      api_base: http://host.docker.internal:8001/v1
+      model: openai/gemma-4-26B-A4B-it
+      # Docker DNS: vllm service on the shared proxy network, internal port 8000
+      api_base: http://vllm:8000/v1
     model_info:
       mode: chat
 
   # Alias so OpenAI-compatible clients work without reconfiguration
   - model_name: gpt-4
     litellm_params:
-      model: openai/gpt-oss-20b
-      api_base: http://host.docker.internal:8001/v1
+      model: openai/gemma-4-26B-A4B-it
+      api_base: http://vllm:8000/v1
 
 litellm_settings:
   # drop_params: false ensures unrecognized params raise errors instead of

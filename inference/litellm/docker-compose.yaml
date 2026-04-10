@@ -2,16 +2,12 @@ services:
   litellm:
     image: ${LITELLM_IMAGE:?error}:${LITELLM_TAG:?error}
     restart: always
-    ports:
-      - ${LITELLM_PORT:-8000}:8000
     volumes:
       - ./litellm-config.yaml:/app/config.yaml
     command: --port 8000 --config config.yaml
     depends_on:
       postgres:
         condition: service_healthy
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       COHERE_API_KEY: ${COHERE_API_KEY:-}
@@ -27,6 +23,9 @@ services:
       OTEL_EXPORTER: 'otlp_http'
       OTEL_ENDPOINT: ${LANGFUSE_HOST}/api/public/otel/v1/traces
       OTEL_HEADERS: "Authorization=Basic ${LANGFUSE_AUTH}"
+    networks:
+      - default
+      - proxy
 
   redis:
     image: ${REDIS_IMAGE}:${REDIS_TAG}
@@ -61,3 +60,9 @@ volumes:
     driver: local
   postgres_data:
     driver: local
+
+networks:
+  default:
+    name: litellm_internal
+  proxy:
+    external: true

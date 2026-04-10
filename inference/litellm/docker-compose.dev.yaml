@@ -1,0 +1,6 @@
+# Dev override: publishes LiteLLM port for direct smoke tests.
+# Usage: docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
+services:
+  litellm:
+    ports:
+      - "${LITELLM_PORT:-8000}:8000"
