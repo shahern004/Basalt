@@ -31,7 +31,7 @@ x-authentik-vols: &authentik-vols
   - ./blueprints/custom:/blueprints/custom
 
 services:
-  server:
+  authentik-server:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:?error}
     command: server
     restart: unless-stopped
@@ -40,10 +40,11 @@ services:
       <<: *authentik-env
     volumes: *authentik-vols
     ports:
-      - "${AUTHENTIK_PORT_HTTP:-80}:9000"
       - "${AUTHENTIK_PORT_HTTPS:-443}:9443"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - "${AUTHENTIK_PORT_HTTP:-9000}:9000"
+    networks:
+      - default
+      - proxy
     depends_on:
       postgres:
         condition: service_healthy
@@ -71,8 +72,6 @@ services:
     environment:
       <<: *authentik-env
     volumes: *authentik-vols
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     depends_on:
       postgres:
         condition: service_healthy
@@ -89,3 +88,9 @@ services:
         limits:
           memory: 1024M
     logging: *default-logging
+
+networks:
+  default:
+    name: authentik_internal
+  proxy:
+    external: true
