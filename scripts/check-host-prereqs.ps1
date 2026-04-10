@@ -25,9 +25,10 @@ Write-Host "`n=== Basalt Host Prerequisites ===" -ForegroundColor Cyan
 Write-Host ""
 
 # 1. WSL2 installed and version 2.0+
+# Note: wsl.exe --version outputs UTF-16LE with null bytes; strip them before parsing.
 try {
-    $wslOutput = wsl --version 2>&1
-    $versionLine = ($wslOutput | Select-String 'WSL version').ToString()
+    $wslRaw = (wsl --version 2>&1) -join "`n" -replace '\0',''
+    $versionLine = ($wslRaw -split "`n" | Select-String 'WSL version').ToString()
     $verString = ($versionLine -replace '.*:\s*', '').Trim()
     $ver = [version]$verString
     Write-Check "WSL2 version ($ver)" ($ver -ge [version]'2.0.0') "Requires 2.0+. Run: wsl --update"
