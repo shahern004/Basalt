@@ -1,0 +1,6 @@
+# Dev override: publishes Open-WebUI port for direct access.
+# Usage: docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
+services:
+  open-webui:
+    ports:
+      - "${OPEN_WEBUI_PORT_HTTP:-3002}:8080"
