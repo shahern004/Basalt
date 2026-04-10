@@ -75,8 +75,6 @@ services:
     # PRODUCTION: Uncomment the line below to use if IAM_AUTH is true and you are using iam auth for postgres
     # volumes:
     #   - ./bundle.pem:/app/bundle.pem:ro
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     logging:
       driver: json-file
       options:
@@ -85,6 +83,9 @@ services:
     # Optional, only for debugging purposes
     volumes:
       - api_server_logs:/var/log/onyx
+    networks:
+      - default
+      - proxy
 
   background:
     image: ${DOCKER_REPO_OVERRIDE:-}onyxdotapp/onyx-backend:${IMAGE_TAG:-latest}
@@ -120,11 +121,12 @@ services:
     # PRODUCTION: Uncomment the line below to use if IAM_AUTH is true and you are using iam auth for postgres
     # volumes:
     #   - ./bundle.pem:/app/bundle.pem:ro
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     # Optional, only for debugging purposes
     volumes:
       - background_logs:/var/log/onyx
+    networks:
+      - default
+      - proxy
     logging:
       driver: json-file
       options:
@@ -299,9 +301,8 @@ services:
       - NGINX_PROXY_CONNECT_TIMEOUT=${NGINX_PROXY_CONNECT_TIMEOUT:-300}
       - NGINX_PROXY_SEND_TIMEOUT=${NGINX_PROXY_SEND_TIMEOUT:-300}
       - NGINX_PROXY_READ_TIMEOUT=${NGINX_PROXY_READ_TIMEOUT:-300}
-    ports:
-      # - "80:80"
-      - "${HOST_PORT:-3000}:80" # allow for localhost:3000 usage, since that is the norm
+    # Ports removed — Onyx is reached through Authentik proxy provider.
+    # For dev access, use: docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
     volumes:
       - ../data/nginx:/etc/nginx/conf.d
     # PRODUCTION: Add SSL certificate volumes for HTTPS support:
@@ -319,8 +320,11 @@ services:
     # in order to make this work on both Unix-like systems and windows
     # PRODUCTION: Change to app.conf.template.prod for production nginx config
     command: >
-      /bin/sh -c "dos2unix /etc/nginx/conf.d/run-nginx.sh 
+      /bin/sh -c "dos2unix /etc/nginx/conf.d/run-nginx.sh
       && /etc/nginx/conf.d/run-nginx.sh app.conf.template"
+    networks:
+      - default
+      - proxy
 
   cache:
     image: ${DOCKER_REPO_OVERRIDE:-}redis:7.4-alpine
@@ -390,3 +394,9 @@ volumes:
   background_logs:
   inference_model_server_logs:
   indexing_model_server_logs:
+
+networks:
+  default:
+    name: onyx_internal
+  proxy:
+    external: true

@@ -1,0 +1,23 @@
+# Dev override: publishes Onyx ports for direct access during development.
+# Usage: docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
+services:
+  nginx:
+    ports:
+      - "${HOST_PORT:-3000}:80"
+  api_server:
+    ports:
+      - "8080:8080"
+  relational_db:
+    ports:
+      - "5432:5432"
+  index:
+    ports:
+      - "19071:19071"
+      - "8081:8081"
+  cache:
+    ports:
+      - "6379:6379"
+  minio:
+    ports:
+      - "9004:9000"
+      - "9005:9001"
