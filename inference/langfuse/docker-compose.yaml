@@ -84,8 +84,6 @@ services:
     image: ${LANGFUSE_WEB_IMAGE}:${LANGFUSE_WEB_TAG}
     restart: always
     depends_on: *langfuse-depends-on
-    ports:
-      - ${LANGFUSE_WEB_PORT}:3000
     environment:
       <<: *langfuse-worker-env
       NEXTAUTH_URL: ${NEXTAUTH_URL:-http://langfuse.docker.localhost}
@@ -105,6 +103,9 @@ services:
       timeout: 5s
       retries: 10
       start_period: 1s
+    networks:
+      - default
+      - proxy
 
   clickhouse:
     image: clickhouse/clickhouse-server:25.2.1.3085-alpine
@@ -148,3 +149,9 @@ volumes:
     driver: local
   redis_data:
     driver: local
+
+networks:
+  default:
+    name: langfuse_internal
+  proxy:
+    external: true

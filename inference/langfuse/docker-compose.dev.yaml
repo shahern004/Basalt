@@ -1,0 +1,6 @@
+# Dev override: publishes Langfuse web UI port for direct access.
+# Usage: docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
+services:
+  langfuse-web:
+    ports:
+      - "${LANGFUSE_WEB_PORT:-3001}:3000"
